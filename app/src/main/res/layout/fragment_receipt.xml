@@ -8,155 +8,258 @@
     android:padding="24dp"
     android:gravity="center_horizontal">
 
-    <com.google.android.material.card.MaterialCardView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:strokeWidth="0dp"
-        app:cardBackgroundColor="@color/white">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/receiptCardContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="10dp"
-            android:padding="32dp"
-            android:gravity="center">
+            android:padding="4dp">
 
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@android:drawable/checkbox_on_background"
-                app:tint="@color/successGreen"
-                android:contentDescription="Success Icon" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Transaction Successful"
-                android:textColor="@color/successGreen"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"
-                android:layout_marginVertical="24dp" />
-
-
-            <RelativeLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/receiptCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Transaction ID"
-                    android:textColor="@color/textSecondary" />
-
-                <TextView
-                    android:id="@+id/tvTxnId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="TXN_12345"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Payment Method" android:textColor="@color/textSecondary" />
-                <TextView android:id="@+id/tvMethod" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Card" android:textColor="@color/textPrimary" android:textStyle="bold" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Timestamp" android:textColor="@color/textSecondary" />
-                <TextView android:id="@+id/tvTimestamp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="2026-08-23 12:00" android:textColor="@color/textPrimary" android:textStyle="bold" />
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"
-                android:layout_marginVertical="24dp" />
-
-            <!-- Items Purchased Moved to Middle -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                app:cardCornerRadius="28dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="8dp">
+                    android:orientation="vertical"
+                    android:padding="28dp"
+                    android:gravity="center">
 
+                    <!-- Shop Header -->
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Description"
-                        android:textColor="@color/textPrimary"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
+                        android:text="PaySwift POS Express"
+                        android:textColor="@color/primaryNavy"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Price"
-                        android:textColor="@color/textPrimary"
+                        android:text="123 Business Ave, Suite 500\nDhaka, Bangladesh"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="12sp"
+                        android:textAlignment="center"
+                        android:layout_marginTop="4dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/dashed_divider"
+                        android:layout_marginVertical="20dp"
+                        android:layerType="software" />
+
+                    <!-- Success Indicator -->
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@android:drawable/checkbox_on_background"
+                        app:tint="@color/successEmerald" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Transaction Successful"
+                        android:textColor="@color/successEmerald"
+                        android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textSize="14sp" />
+                        android:layout_marginTop="12dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/dashed_divider"
+                        android:layout_marginVertical="24dp"
+                        android:layerType="software" />
+
+                    <!-- Details Table -->
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="1">
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:text="Customer" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                            <TextView android:id="@+id/tvCustomerInfo" android:text="John Doe (+8801...)" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                        </TableRow>
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:text="Order Type" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                            <TextView android:id="@+id/tvOrderType" android:text="Dine-in" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                        </TableRow>
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:text="Transaction ID" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                            <TextView android:id="@+id/tvTxnId" android:text="TXN_12345" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                        </TableRow>
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:text="Method" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                            <TextView android:id="@+id/tvMethod" android:text="Card" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                        </TableRow>
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:text="Timestamp" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                            <TextView android:id="@+id/tvTimestamp" android:text="2026-08-23 12:00" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                        </TableRow>
+                    </TableLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/dashed_divider"
+                        android:layout_marginVertical="20dp"
+                        android:layerType="software" />
+
+                    <!-- Items List -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="12dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Item Description"
+                                android:textColor="@color/textPrimary"
+                                android:textStyle="bold"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Price"
+                                android:textColor="@color/textPrimary"
+                                android:textStyle="bold"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/layoutItemsList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/dashed_divider"
+                        android:layout_marginVertical="20dp"
+                        android:layerType="software" />
+
+                    <!-- Detailed Billing Section -->
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="1">
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:text="Subtotal" android:textColor="@color/textSecondary" android:textSize="14sp" />
+                            <TextView android:id="@+id/tvSubtotal" android:text="$0.00" android:textColor="@color/textPrimary" android:gravity="end" android:textSize="14sp" />
+                        </TableRow>
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:id="@+id/tvDiscountLabel" android:text="Discount (0%)" android:textColor="@color/alertRed" android:textSize="14sp" />
+                            <TextView android:id="@+id/tvDiscountAmount" android:text="-$0.00" android:textColor="@color/alertRed" android:gravity="end" android:textSize="14sp" />
+                        </TableRow>
+
+                        <TableRow android:layout_marginBottom="8dp">
+                            <TextView android:id="@+id/tvTaxLabel" android:text="VAT (0%)" android:textColor="@color/textSecondary" android:textSize="14sp" />
+                            <TextView android:id="@+id/tvTaxAmount" android:text="+$0.00" android:textColor="@color/textSecondary" android:gravity="end" android:textSize="14sp" />
+                        </TableRow>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/divider"
+                            android:layout_marginVertical="8dp" />
+
+                        <TableRow>
+                            <TextView android:text="Grand Total" android:textColor="@color/primaryNavy" android:textSize="18sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/tvGrandTotal" android:text="$0.00" android:textColor="@color/primaryNavy" android:textSize="22sp" android:textStyle="bold" android:gravity="end" />
+                        </TableRow>
+                    </TableLayout>
+
+                    <!-- QR Code Footer -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Scan for Digital Copy"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="10sp"
+                        android:layout_marginTop="32dp"
+                        android:textStyle="italic" />
+
+                    <ImageView
+                        android:id="@+id/ivQrCode"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="fitCenter"
+                        android:src="@android:drawable/ic_menu_sort_by_size" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--- THANK YOU ---"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="12sp"
+                        android:layout_marginTop="24dp"
+                        android:letterSpacing="0.2" />
+
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
+    </ScrollView>
 
-                <LinearLayout
-                    android:id="@+id/layoutItemsList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Dynamic rows will be added here -->
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"
-                android:layout_marginVertical="16dp" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Amount Paid" android:textColor="@color/textPrimary" android:textSize="18sp" android:textStyle="bold" />
-                <TextView android:id="@+id/tvAmountPaid" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="$0.00" android:textColor="@color/primaryNavy" android:textSize="22sp" android:textStyle="bold" />
-            </RelativeLayout>
-
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnNewTransaction"
-        style="@style/Widget.Material3.Button.TonalButton"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginTop="48dp"
-        android:text="New Sale"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:cornerRadius="16dp" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrintReceipt"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Print Receipt"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="16dp"
+            app:icon="@android:drawable/ic_menu_save"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNewTransaction"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:text="New Sale"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="16dp" />
+    </LinearLayout>
 
 </LinearLayout>

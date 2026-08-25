@@ -1,0 +1,5 @@
+- [x] Modify `AndroidManifest.xml` to update `QrScannerActivity` theme
+- [x] Verify build
+- [x] Improve `extractNumber` logic in `QrScannerActivity.java`
+- [x] Verify build again
+- [ ] Manual verification (by user)

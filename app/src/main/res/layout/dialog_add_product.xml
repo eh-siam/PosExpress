@@ -58,7 +58,7 @@
             app:startIconDrawable="@android:drawable/ic_menu_save"
             app:startIconTint="@color/primaryNavy"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.PaySwift.Rounded"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etProductPrice"
@@ -66,6 +66,26 @@
                 android:layout_height="wrap_content"
                 android:minHeight="56dp"
                 android:inputType="numberDecimal"
+                android:textColor="@color/textPrimary" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Category"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            app:startIconDrawable="@android:drawable/ic_menu_agenda"
+            app:startIconTint="@color/primaryNavy"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.PaySwift.Rounded"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/etProductCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:inputType="text"
                 android:textColor="@color/textPrimary" />
 
         </com.google.android.material.textfield.TextInputLayout>

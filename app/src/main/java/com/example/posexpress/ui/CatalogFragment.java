@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,13 +19,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.posexpress.R;
+import com.example.posexpress.model.Category;
 import com.example.posexpress.model.Product;
 import com.example.posexpress.viewmodel.PosViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,6 +60,7 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         progressBar = view.findViewById(R.id.progressBar); // Need to ensure this exists in fragment_catalog
         MaterialButton btnProceedPay = view.findViewById(R.id.btnProceedPay);
         FloatingActionButton fabAddProduct = view.findViewById(R.id.fabAddProduct);
+        ChipGroup chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
@@ -65,6 +72,36 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
                 adapter.setProductList(products);
             }
             checkEmptyState(products.isEmpty());
+        });
+
+        viewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
+            // Update Chips
+            chipGroupCategories.removeAllViews();
+            
+            // Add "All" chip
+            Chip allChip = new Chip(requireContext());
+            allChip.setText("All");
+            allChip.setCheckable(true);
+            allChip.setChecked(true);
+            allChip.setTag("All");
+            chipGroupCategories.addView(allChip);
+
+            for (Category category : categories) {
+                Chip chip = new Chip(requireContext());
+                chip.setText(category.getName());
+                chip.setCheckable(true);
+                chip.setTag(category.getName());
+                chipGroupCategories.addView(chip);
+            }
+            
+            chipGroupCategories.setOnCheckedStateChangeListener((group, checkedIds) -> {
+                if (!checkedIds.isEmpty()) {
+                    Chip selectedChip = group.findViewById(checkedIds.get(0));
+                    if (selectedChip != null) {
+                        viewModel.setSelectedCategory(selectedChip.getTag().toString());
+                    }
+                }
+            });
         });
 
         viewModel.getTotalAmount().observe(getViewLifecycleOwner(), total -> {
@@ -81,8 +118,31 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
             if (progressBar != null) progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
         });
 
+        viewModel.getIsLoadingMore().observe(getViewLifecycleOwner(), loading -> {
+            if (loading) {
+                Toast.makeText(getContext(), "Loading more products...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && dy > 0) { // check for scroll down
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                        viewModel.loadNextPage();
+                    }
+                }
+            }
         });
 
         fabAddProduct.setOnClickListener(v -> showProductDialog(null));
@@ -127,26 +187,72 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_product, null);
         TextInputEditText etName = dialogView.findViewById(R.id.etProductName);
         TextInputEditText etPrice = dialogView.findViewById(R.id.etProductPrice);
+        AutoCompleteTextView etCategory = dialogView.findViewById(R.id.etProductCategory);
+
+        // Setup Category Dropdown
+        List<Category> categories = viewModel.getCategoryList().getValue();
+        List<String> categoryNames = new ArrayList<>();
+        if (categories != null) {
+            for (Category c : categories) categoryNames.add(c.getName());
+        }
+        
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryNames);
+        etCategory.setAdapter(catAdapter);
 
         if (productToEdit != null) {
             etName.setText(productToEdit.getName());
             etPrice.setText(String.valueOf(productToEdit.getPrice()));
+            etCategory.setText(productToEdit.getCategory(), false);
         }
 
-        new MaterialAlertDialogBuilder(requireContext())
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(productToEdit == null ? "Add New Product" : "Edit Product")
                 .setIcon(productToEdit == null ? android.R.drawable.ic_input_add : android.R.drawable.ic_menu_edit)
                 .setView(dialogView)
-                .setPositiveButton(productToEdit == null ? "Add" : "Update", (dialog, which) -> {
-                    String name = etName.getText().toString().trim();
-                    String priceStr = etPrice.getText().toString().trim();
-                    if (productToEdit == null) {
-                        viewModel.addProduct(name, priceStr);
-                    } else {
-                        viewModel.editProduct(productToEdit, name, priceStr);
-                    }
-                })
+                .setPositiveButton(productToEdit == null ? "Add" : "Update", null)
                 .setNegativeButton("Cancel", null)
-                .show();
+                .create();
+
+        dialog.show();
+
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String name = etName.getText().toString().trim();
+            String priceStr = etPrice.getText().toString().trim();
+            String category = etCategory.getText().toString().trim();
+
+            if (name.isEmpty()) {
+                Toast.makeText(getContext(), "Please enter product name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (priceStr.isEmpty()) {
+                Toast.makeText(getContext(), "Please enter price", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Duplicate Name Check
+            if (productToEdit == null) {
+                // Adding new product
+                if (viewModel.isProductNameDuplicate(name)) {
+                    Toast.makeText(getContext(), "Product '" + name + "' already exists!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } else {
+                // Editing existing product - check if name changed and new name is duplicate
+                if (!productToEdit.getName().equalsIgnoreCase(name) && viewModel.isProductNameDuplicate(name)) {
+                    Toast.makeText(getContext(), "Product '" + name + "' already exists!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            if (category.isEmpty()) category = "General";
+
+            if (productToEdit == null) {
+                viewModel.addProduct(name, priceStr, category);
+            } else {
+                viewModel.editProduct(productToEdit, name, priceStr, category);
+            }
+            dialog.dismiss();
+        });
     }
 }

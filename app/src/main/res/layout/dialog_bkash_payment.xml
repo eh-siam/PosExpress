@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_menu_send"
+        android:layout_marginBottom="16dp"
+        app:tint="#D12053" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="bKash Payment"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#D12053"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please enter the customer's bKash mobile number to proceed."
+        android:textAlignment="center"
+        android:textColor="@color/textSecondary"
+        android:textSize="14sp"
+        android:layout_marginBottom="24dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilBkashNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="bKash Number (e.g. 017xxxxxxxx)"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        app:boxStrokeColor="#D12053"
+        app:hintTextColor="#D12053"
+        app:startIconDrawable="@android:drawable/ic_menu_call"
+        app:startIconTint="#D12053">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBkashNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:maxLength="11" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnScanQr"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Scan bKash QR"
+        app:icon="@android:drawable/ic_menu_camera"
+        app:iconTint="#D12053"
+        android:textColor="#D12053" />
+
+</LinearLayout>

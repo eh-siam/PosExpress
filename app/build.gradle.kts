@@ -54,5 +54,20 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-analytics")
-    implementation ("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-database")
+    
+    // Printing Support
+    implementation("androidx.print:print:1.0.0")
+
+    // QR Code Generation
+    implementation("com.google.zxing:core:3.5.3")
+
+    // CameraX
+    val cameraxVersion = "1.3.4"
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+
+    // ML Kit Barcode Scanning
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
 }

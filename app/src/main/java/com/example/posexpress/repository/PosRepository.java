@@ -1,6 +1,7 @@
 package com.example.posexpress.repository;
 
 import androidx.annotation.NonNull;
+import com.example.posexpress.model.Category;
 import com.example.posexpress.model.Order;
 import com.example.posexpress.model.Product;
 import com.google.firebase.database.DataSnapshot;
@@ -21,7 +22,9 @@ public class PosRepository {
     private static PosRepository instance;
     private final DatabaseReference productsRef;
     private final DatabaseReference ordersRef;
+    private final DatabaseReference categoriesRef;
     private final List<Product> productList = new ArrayList<>();
+    private final List<Category> categoryList = new ArrayList<>();
     private final Map<Integer, Integer> cartQuantities = new HashMap<>();
     private String transactionJson;
 
@@ -30,10 +33,16 @@ public class PosRepository {
         void onError(String error);
     }
 
+    public interface CategoryCallback {
+        void onCategoriesChanged(List<Category> categories);
+        void onError(String error);
+    }
+
     private PosRepository() {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         productsRef = db.getReference("products");
         ordersRef = db.getReference("orders");
+        categoriesRef = db.getReference("categories");
     }
 
     public static synchronized PosRepository getInstance() {
@@ -67,8 +76,71 @@ public class PosRepository {
         });
     }
 
+    /**
+     * Fetches products in pages for pagination.
+     */
+    public void fetchProductsPage(int pageSize, String lastId, DataCallback callback) {
+        com.google.firebase.database.Query query;
+        if (lastId == null) {
+            query = productsRef.orderByKey().limitToFirst(pageSize);
+        } else {
+            query = productsRef.orderByKey().startAfter(lastId).limitToFirst(pageSize);
+        }
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Product> page = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Product product = child.getValue(Product.class);
+                    if (product != null) {
+                        page.add(product);
+                    }
+                }
+                callback.onDataChanged(page);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError(error.getMessage());
+            }
+        });
+    }
+
     public List<Product> getProducts() {
         return productList;
+    }
+
+    /**
+     * Fetches all categories from Firebase node 'categories'.
+     */
+    public void observeCategories(CategoryCallback callback) {
+        categoriesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                categoryList.clear();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Category category = child.getValue(Category.class);
+                    if (category != null) {
+                        categoryList.add(category);
+                    }
+                }
+                callback.onCategoriesChanged(categoryList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError(error.getMessage());
+            }
+        });
+    }
+
+    public void addCategory(Category category) {
+        String id = categoriesRef.push().getKey();
+        if (id != null) {
+            category.setId(id);
+            categoriesRef.child(id).setValue(category);
+        }
     }
 
     public void addProduct(Product product) {
@@ -87,10 +159,13 @@ public class PosRepository {
     /**
      * Saves order details under the Firebase 'orders' node with a unique ID and timestamp.
      */
-    public void placeOrder(double totalAmount, String paymentMethod, List<String> cartItems) {
+    public void placeOrder(double totalAmount, String paymentMethod, List<String> cartItems, String transactionId,
+                           String orderType, String customerName, String customerPhone, double subtotal,
+                           double discountAmount, double taxAmount, double discountPercent, double taxPercent) {
         String orderId = ordersRef.push().getKey();
         if (orderId != null) {
-            Order order = new Order(orderId, totalAmount, paymentMethod, ServerValue.TIMESTAMP, cartItems);
+            Order order = new Order(orderId, transactionId, totalAmount, paymentMethod, ServerValue.TIMESTAMP, cartItems,
+                    orderType, customerName, customerPhone, subtotal, discountAmount, taxAmount, discountPercent, taxPercent);
             ordersRef.child(orderId).setValue(order);
         }
     }

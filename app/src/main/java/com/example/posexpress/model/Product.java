@@ -6,6 +6,8 @@ import androidx.annotation.Keep;
  * Product Model for POSExpress.
  * Optimized for Firebase Realtime Database serialization.
  */
+
+
 @Keep
 public class Product {
     private int id;
@@ -33,10 +35,26 @@ public class Product {
     public void setName(String name) { this.name = name; }
 
     public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public void setPrice(Object price) {
+        if (price instanceof Number) {
+            this.price = ((Number) price).doubleValue();
+        } else if (price instanceof String) {
+            try {
+                this.price = Double.parseDouble((String) price);
+            } catch (NumberFormatException e) {
+                this.price = 0.0;
+            }
+        }
+    }
 
     public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public void setCategory(Object category) {
+        if (category == null) {
+            this.category = "General";
+        } else {
+            this.category = String.valueOf(category);
+        }
+    }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }

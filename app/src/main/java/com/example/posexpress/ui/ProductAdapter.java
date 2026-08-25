@@ -59,6 +59,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.tvName.setText(product.getName());
         holder.tvPrice.setText(String.format(Locale.getDefault(), "$%.2f", product.getPrice()));
         
+        String category = product.getCategory();
+        if (category == null || category.isEmpty()) {
+            holder.tvCategory.setText("General");
+        } else {
+            holder.tvCategory.setText(category);
+        }
+        
         int quantity = productQuantities.getOrDefault(product.getId(), 0);
         
         if (quantity > 0) {
@@ -116,7 +123,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvPrice, tvBadge, tvQty;
+        TextView tvName, tvPrice, tvBadge, tvQty, tvCategory;
         MaterialButton btnAdd, btnPlus, btnMinus;
         MaterialCardView cardView;
         LinearLayout layoutQtyControls;
@@ -127,6 +134,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             super(itemView);
             tvName = itemView.findViewById(R.id.tvProductName);
             tvPrice = itemView.findViewById(R.id.tvProductPrice);
+            tvCategory = itemView.findViewById(R.id.tvProductCategory);
             tvBadge = itemView.findViewById(R.id.tvQuantityBadge);
             tvQty = itemView.findViewById(R.id.tvQuantity);
             btnAdd = itemView.findViewById(R.id.btnAddCart);

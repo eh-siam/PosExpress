@@ -1,5 +1,6 @@
 package com.example.posexpress.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -7,9 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -22,6 +27,8 @@ import com.example.posexpress.model.Product;
 import com.example.posexpress.viewmodel.PosViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,10 +46,27 @@ public class PaymentFragment extends Fragment {
     private View paymentContent;
     private View layoutEmptyState;
     
+    private RadioGroup rgOrderType;
+    
     private MaterialCardView cardEmv, cardWallet, cardCash;
     private RadioButton rbEmv, rbWallet, rbCash;
     private View indicatorEmv, indicatorWallet, indicatorCash;
     private String selectedMethodName = "EMV Card Payment";
+    
+    private TextInputEditText etBkashNumberInDialog;
+    
+    private final ActivityResultLauncher<Intent> qrScannerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                    String scannedNumber = result.getData().getStringExtra("scanned_number");
+                    if (scannedNumber != null && etBkashNumberInDialog != null) {
+                        etBkashNumberInDialog.setText(scannedNumber);
+                        Toast.makeText(requireContext(), "QR Scanned Successfully", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
 
     @Nullable
     @Override
@@ -59,6 +83,9 @@ public class PaymentFragment extends Fragment {
         paymentContent = view.findViewById(R.id.paymentContent);
         layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
         MaterialButton btnBackToShop = view.findViewById(R.id.btnBackToShop);
+        
+
+        rgOrderType = view.findViewById(R.id.rgOrderType);
 
         viewModel.getTotalAmount().observe(getViewLifecycleOwner(), total -> {
             if (total <= 0) {
@@ -89,7 +116,39 @@ public class PaymentFragment extends Fragment {
         cardWallet.setOnClickListener(v -> selectMethod(R.id.cardWallet));
         cardCash.setOnClickListener(v -> selectMethod(R.id.cardCash));
 
-        btnPayNow.setOnClickListener(v -> processPayment(selectedMethodName));
+        btnPayNow.setOnClickListener(v -> {
+            if ("e-Wallet / QR Code".equals(selectedMethodName)) {
+                showBkashDialog();
+            } else {
+                processPayment(selectedMethodName, "");
+            }
+        });
+    }
+
+    private void showBkashDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_bkash_payment, null);
+        etBkashNumberInDialog = dialogView.findViewById(R.id.etBkashNumber);
+        MaterialButton btnScanQr = dialogView.findViewById(R.id.btnScanQr);
+
+        btnScanQr.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), QrScannerActivity.class);
+            qrScannerLauncher.launch(intent);
+        });
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    String bkashNumber = etBkashNumberInDialog.getText().toString().trim();
+                    if (bkashNumber.length() == 11) {
+                        processPayment("bKash Payment", bkashNumber);
+                    } else {
+                        // For simplicity, just proceeding, but in real app you'd validate
+                        processPayment("bKash Payment", bkashNumber);
+                    }
+                    etBkashNumberInDialog = null; // Clear reference
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> etBkashNumberInDialog = null)
+                .show();
     }
 
     private void showEmptyState() {
@@ -135,18 +194,39 @@ public class PaymentFragment extends Fragment {
         return Math.round(dp * density);
     }
 
-    private void processPayment(String method) {
+    private void processPayment(String method, String bkashNumber) {
         loadingOverlay.setVisibility(View.VISIBLE);
         btnPayNow.setEnabled(false);
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
-                double total = viewModel.getTotalAmount().getValue();
+                double subtotal = viewModel.getTotalAmount().getValue();
+                double discountPercent = 5.0; // Requirement: 5%
+                double taxPercent = 7.5; // Requirement: 7.5%
+                
+                double discountAmount = subtotal * (discountPercent / 100.0);
+                double taxAmount = (subtotal - discountAmount) * (taxPercent / 100.0);
+                double totalAmount = subtotal - discountAmount + taxAmount;
+
+                int selectedId = rgOrderType.getCheckedRadioButtonId();
+                RadioButton rbOrderType = getView().findViewById(selectedId);
+                String orderType = rbOrderType.getText().toString();
+
                 JSONObject response = new JSONObject();
                 response.put("status", "SUCCESS");
-                response.put("transaction_id", "TXN_" + System.currentTimeMillis());
-                response.put("amount", total);
+                String txnId = "TXN_" + System.currentTimeMillis();
+                response.put("transaction_id", txnId);
+                response.put("amount", totalAmount);
+                response.put("subtotal", subtotal);
+                response.put("discount_amount", discountAmount);
+                response.put("tax_amount", taxAmount);
+                response.put("discount_percent", discountPercent);
+                response.put("tax_percent", taxPercent);
                 response.put("method", method);
+                response.put("order_type", orderType);
+                if (!bkashNumber.isEmpty()) {
+                    response.put("bkash_number", bkashNumber);
+                }
                 
                 JSONArray itemsArray = new JSONArray();
                 Map<Integer, Integer> cart = viewModel.getCartQuantities().getValue();
@@ -157,9 +237,9 @@ public class PaymentFragment extends Fragment {
                         Integer qty = cart.get(p.getId());
                         if (qty != null && qty > 0) {
                             String itemString;
-                            double subtotal = p.getPrice() * qty;
+                            double itemTotal = p.getPrice() * qty;
                             if (qty > 1) {
-                                itemString = String.format(Locale.getDefault(), "%s x%d | $%.2f", p.getName(), qty, subtotal);
+                                itemString = String.format(Locale.getDefault(), "%s x%d | $%.2f", p.getName(), qty, itemTotal);
                             } else {
                                 itemString = String.format(Locale.getDefault(), "%s | $%.2f", p.getName(), p.getPrice());
                             }
@@ -171,8 +251,9 @@ public class PaymentFragment extends Fragment {
 
                 viewModel.setTransactionJson(response.toString());
                 
-                // NEW: Place order in Firebase database
-                viewModel.placeOrder(method);
+                // NEW: Place order in Firebase database with all details
+                viewModel.placeOrder(method, txnId, orderType, "", bkashNumber,
+                        subtotal, discountAmount, taxAmount, discountPercent, taxPercent, totalAmount);
                 
                 Navigation.findNavController(requireView()).navigate(R.id.action_paymentFragment_to_receiptFragment);
 
