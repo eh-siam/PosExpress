@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F1F3FB"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Enter the details below to update your inventory catalog."
+                android:textColor="@color/textSecondary"
+                android:textSize="13sp"
+                android:textAlignment="center" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Product Name"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            app:startIconDrawable="@android:drawable/ic_menu_edit"
+            app:startIconTint="@color/primaryNavy"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.PaySwift.Rounded"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:inputType="textCapWords"
+                android:textColor="@color/textPrimary" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Price ($)"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            app:startIconDrawable="@android:drawable/ic_menu_save"
+            app:startIconTint="@color/primaryNavy"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.PaySwift.Rounded"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etProductPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:inputType="numberDecimal"
+                android:textColor="@color/textPrimary" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+</ScrollView>

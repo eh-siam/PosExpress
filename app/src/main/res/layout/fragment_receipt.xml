@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundOffWhite"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp"
+            android:padding="32dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@android:drawable/checkbox_on_background"
+                app:tint="@color/successGreen"
+                android:contentDescription="Success Icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Transaction Successful"
+                android:textColor="@color/successGreen"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginVertical="24dp" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Transaction ID"
+                    android:textColor="@color/textSecondary" />
+
+                <TextView
+                    android:id="@+id/tvTxnId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="TXN_12345"
+                    android:textColor="@color/textPrimary"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Payment Method" android:textColor="@color/textSecondary" />
+                <TextView android:id="@+id/tvMethod" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Card" android:textColor="@color/textPrimary" android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Timestamp" android:textColor="@color/textSecondary" />
+                <TextView android:id="@+id/tvTimestamp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="2026-08-23 12:00" android:textColor="@color/textPrimary" android:textStyle="bold" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginVertical="24dp" />
+
+            <!-- Items Purchased Moved to Middle -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Description"
+                        android:textColor="@color/textPrimary"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Price"
+                        android:textColor="@color/textPrimary"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutItemsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <!-- Dynamic rows will be added here -->
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginVertical="16dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Amount Paid" android:textColor="@color/textPrimary" android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tvAmountPaid" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="$0.00" android:textColor="@color/primaryNavy" android:textSize="22sp" android:textStyle="bold" />
+            </RelativeLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnNewTransaction"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="48dp"
+        android:text="New Sale"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp" />
+
+</LinearLayout>

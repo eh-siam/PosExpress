@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/catalogFragment">
+
+    <fragment
+        android:id="@+id/catalogFragment"
+        android:name="com.example.posexpress.ui.CatalogFragment"
+        android:label="Catalog"
+        tools:layout="@layout/fragment_catalog">
+        <action
+            android:id="@+id/action_catalogFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.posexpress.ui.PaymentFragment"
+        android:label="Payment"
+        tools:layout="@layout/fragment_payment">
+        <action
+            android:id="@+id/action_paymentFragment_to_receiptFragment"
+            app:destination="@id/receiptFragment"
+            app:popUpTo="@id/catalogFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/receiptFragment"
+        android:name="com.example.posexpress.ui.ReceiptFragment"
+        android:label="Receipt"
+        tools:layout="@layout/fragment_receipt">
+        <action
+            android:id="@+id/action_receiptFragment_to_catalogFragment"
+            app:destination="@id/catalogFragment"
+            app:popUpTo="@id/catalogFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+</navigation>

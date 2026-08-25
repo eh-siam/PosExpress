@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primaryNavy">#1A237E</color>
+    <color name="primaryLight">#534BAE</color>
+    <color name="successGreen">#2E7D32</color>
+    <color name="successEmerald">#388E3C</color>
+    <color name="backgroundOffWhite">#F8F9FA</color>
+    <color name="white">#FFFFFF</color>
+    <color name="textPrimary">#1A1C1E</color>
+    <color name="textSecondary">#44474E</color>
+    <color name="divider">#C4C7EB</color>
+    <color name="alertRed">#BA1A1A</color>
+    <color name="surfaceVariant">#E1E2EC</color>
+    <color name="successContainer">#D1E7DD</color>
+    <color name="onSuccessContainer">#0A3622</color>
+    <color name="successContainerSubtle">#F0F9F4</color>
+</resources>

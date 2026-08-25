@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.PosExpress" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primaryNavy</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/backgroundOffWhite</item>
+        <item name="android:statusBarColor">@color/primaryNavy</item>
+        <item name="colorSecondaryContainer">@color/surfaceVariant</item>
+        <item name="colorOnSecondaryContainer">@color/primaryNavy</item>
+    </style>
+
+    <style name="Theme.PosExpress" parent="Base.Theme.PosExpress" />
+
+    <!-- Premium Button Style -->
+    <style name="Widget.PaySwift.Button.Premium" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/successGreen</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.PaySwift.ExtraRounded</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <style name="ShapeAppearance.PaySwift.ExtraRounded" parent="">
+        <item name="cornerSize">28dp</item>
+    </style>
+
+    <style name="ShapeAppearance.PaySwift.Rounded" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+</resources>

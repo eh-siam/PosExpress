@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundOffWhite">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/backgroundOffWhite">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Payment Terminal"
+                android:textColor="@color/primaryNavy"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/paymentContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appBar"
+        android:fillViewport="true">
+        <!-- existing content -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/primaryNavy">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="32dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Amount to Pay"
+                        android:textColor="#BDBDBD"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvPayableAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$0.00"
+                        android:textColor="@color/white"
+                        android:textSize="48sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Payment Method"
+                android:textColor="@color/textPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="16dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutPaymentMethods"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardEmv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/successEmerald"
+                    app:cardBackgroundColor="@color/successContainerSubtle">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:id="@+id/indicatorEmv"
+                            android:layout_width="6dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/successEmerald"
+                            android:visibility="visible" />
+
+                        <RadioButton
+                            android:id="@+id/rbEmv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="EMV Card Payment"
+                            android:padding="20dp"
+                            android:checked="true"
+                            android:clickable="false"
+                            android:buttonTint="@color/primaryNavy" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardWallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/surfaceVariant"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:id="@+id/indicatorWallet"
+                            android:layout_width="6dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/successEmerald"
+                            android:visibility="gone" />
+
+                        <RadioButton
+                            android:id="@+id/rbWallet"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="e-Wallet / QR Code"
+                            android:padding="20dp"
+                            android:clickable="false"
+                            android:buttonTint="@color/primaryNavy" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardCash"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/surfaceVariant"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:id="@+id/indicatorCash"
+                            android:layout_width="6dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/successEmerald"
+                            android:visibility="gone" />
+
+                        <RadioButton
+                            android:id="@+id/rbCash"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Cash Payment"
+                            android:padding="20dp"
+                            android:clickable="false"
+                            android:buttonTint="@color/primaryNavy" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPayNow"
+                style="@style/Widget.PaySwift.Button.Premium"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="32dp"
+                android:text="Pay Now"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:cornerRadius="16dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Empty State View -->
+    <LinearLayout
+        android:id="@+id/layoutEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appBar"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@android:drawable/ic_menu_search"
+            app:tint="@color/surfaceVariant" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Transaction Data"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:layout_marginTop="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="It seems you haven't selected any items yet. Please return to the shop."
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:textAlignment="center"
+            android:layout_marginTop="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackToShop"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Return to Shop"
+            android:layout_marginTop="32dp"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#A6FFFFFF"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/primaryNavy" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "889078473653",
+    "project_id": "buynow-ea92d",
+    "storage_bucket": "buynow-ea92d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889078473653:android:a2d643434b5b8f8dce6ffc",
+        "android_client_info": {
+          "package_name": "com.example.posexpress"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ25EkC0sBNStPwoGeIie4hfbTa9R99aw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
