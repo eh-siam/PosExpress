@@ -24,6 +24,7 @@ import androidx.navigation.Navigation;
 
 import com.example.posexpress.R;
 import com.example.posexpress.model.Product;
+import com.example.posexpress.util.CountryConfig;
 import com.example.posexpress.viewmodel.PosViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -93,7 +94,7 @@ public class PaymentFragment extends Fragment {
                 btnBackToShop.setOnClickListener(v -> Navigation.findNavController(view).popBackStack());
             } else {
                 TextView tvPayableAmount = view.findViewById(R.id.tvPayableAmount);
-                tvPayableAmount.setText(String.format(Locale.getDefault(), "$%.2f", total));
+                tvPayableAmount.setText(String.format(Locale.getDefault(), "%s%.2f", viewModel.getCurrencySymbol(), total));
             }
         });
 
@@ -111,6 +112,12 @@ public class PaymentFragment extends Fragment {
         indicatorEmv = view.findViewById(R.id.indicatorEmv);
         indicatorWallet = view.findViewById(R.id.indicatorWallet);
         indicatorCash = view.findViewById(R.id.indicatorCash);
+
+        // Multi-country payment visibility
+        CountryConfig country = viewModel.getSelectedCountry();
+        if (country != null && !country.isSupportsBkash()) {
+            cardWallet.setVisibility(View.GONE);
+        }
 
         cardEmv.setOnClickListener(v -> selectMethod(R.id.cardEmv));
         cardWallet.setOnClickListener(v -> selectMethod(R.id.cardWallet));
@@ -238,10 +245,11 @@ public class PaymentFragment extends Fragment {
                         if (qty != null && qty > 0) {
                             String itemString;
                             double itemTotal = p.getPrice() * qty;
+                            String sym = viewModel.getCurrencySymbol();
                             if (qty > 1) {
-                                itemString = String.format(Locale.getDefault(), "%s x%d | $%.2f", p.getName(), qty, itemTotal);
+                                itemString = String.format(Locale.getDefault(), "%s x%d | %s%.2f", p.getName(), qty, sym, itemTotal);
                             } else {
-                                itemString = String.format(Locale.getDefault(), "%s | $%.2f", p.getName(), p.getPrice());
+                                itemString = String.format(Locale.getDefault(), "%s | %s%.2f", p.getName(), sym, p.getPrice());
                             }
                             itemsArray.put(itemString);
                         }

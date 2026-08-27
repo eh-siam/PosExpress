@@ -6,6 +6,9 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.posexpress.ui.CountrySelectionActivity;
+import com.example.posexpress.util.AppPreferences;
+
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -18,7 +21,13 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Intent intent = new Intent(SplashActivity.this, HostActivity.class);
+            AppPreferences prefs = new AppPreferences(this);
+            Intent intent;
+            if (prefs.getCountryCode() != null) {
+                intent = new Intent(SplashActivity.this, HostActivity.class);
+            } else {
+                intent = new Intent(SplashActivity.this, CountrySelectionActivity.class);
+            }
             startActivity(intent);
             finish();
         }, 2000);

@@ -39,8 +39,12 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
     private ProductAdapter adapter;
     private RecyclerView recyclerView;
     private View layoutEmptyState;
-    private TextView tvTotalAmount;
+    private TextView tvTotalAmount, tvEmptyTitle, tvEmptySubtitle;
+    private android.widget.ImageView ivEmptyIcon;
+    private MaterialButton btnEmptyAction;
     private ProgressBar progressBar;
+    private ChipGroup chipGroupCategories;
+    private FloatingActionButton fabAddProduct;
 
     @Nullable
     @Override
@@ -57,13 +61,24 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         tvTotalAmount = view.findViewById(R.id.tvTotalAmount);
         recyclerView = view.findViewById(R.id.recyclerView);
         layoutEmptyState = view.findViewById(R.id.layoutMainEmptyState);
-        progressBar = view.findViewById(R.id.progressBar); // Need to ensure this exists in fragment_catalog
+        tvEmptyTitle = view.findViewById(R.id.tvEmptyTitle);
+        tvEmptySubtitle = view.findViewById(R.id.tvEmptySubtitle);
+        ivEmptyIcon = view.findViewById(R.id.ivEmptyIcon);
+        btnEmptyAction = view.findViewById(R.id.btnEmptyAction);
+
+        progressBar = view.findViewById(R.id.progressBar);
         MaterialButton btnProceedPay = view.findViewById(R.id.btnProceedPay);
-        FloatingActionButton fabAddProduct = view.findViewById(R.id.fabAddProduct);
-        ChipGroup chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
+        fabAddProduct = view.findViewById(R.id.fabAddProduct);
+        chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
+        View btnDashboard = view.findViewById(R.id.btnDashboard);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
+        // Ensure adapter is attached if it already exists (from backstack)
+        if (adapter != null) {
+            recyclerView.setAdapter(adapter);
+        }
+
         viewModel.getProductList().observe(getViewLifecycleOwner(), products -> {
             if (adapter == null) {
                 adapter = new ProductAdapter(products, this);
@@ -71,7 +86,7 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
             } else {
                 adapter.setProductList(products);
             }
-            checkEmptyState(products.isEmpty());
+            updateUIState();
         });
 
         viewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
@@ -105,7 +120,7 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         });
 
         viewModel.getTotalAmount().observe(getViewLifecycleOwner(), total -> {
-            tvTotalAmount.setText(String.format(Locale.getDefault(), "$%.2f", total));
+            tvTotalAmount.setText(String.format(Locale.getDefault(), "%s%.2f", viewModel.getCurrencySymbol(), total));
         });
 
         viewModel.getCartQuantities().observe(getViewLifecycleOwner(), quantities -> {
@@ -115,7 +130,7 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), loading -> {
-            if (progressBar != null) progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
+            updateUIState();
         });
 
         viewModel.getIsLoadingMore().observe(getViewLifecycleOwner(), loading -> {
@@ -146,6 +161,7 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         });
 
         fabAddProduct.setOnClickListener(v -> showProductDialog(null));
+        btnDashboard.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_catalogFragment_to_dashboardFragment));
         btnProceedPay.setOnClickListener(v -> {
             Double total = viewModel.getTotalAmount().getValue();
             if (total != null && total > 0) {
@@ -178,9 +194,70 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
                 .show();
     }
 
-    private void checkEmptyState(boolean isEmpty) {
-        recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-        layoutEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Clear references to views to avoid memory leaks
+        recyclerView = null;
+        layoutEmptyState = null;
+        tvTotalAmount = null;
+        progressBar = null;
+    }
+
+    private void updateUIState() {
+        List<Product> products = viewModel.getProductList().getValue();
+        Boolean loading = viewModel.getIsLoading().getValue();
+
+        if (Boolean.TRUE.equals(loading)) {
+            if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+            layoutEmptyState.setVisibility(View.GONE);
+            if (products != null && !products.isEmpty()) {
+                recyclerView.setVisibility(View.VISIBLE);
+            } else {
+                recyclerView.setVisibility(View.GONE);
+            }
+        } else {
+            if (progressBar != null) progressBar.setVisibility(View.GONE);
+            boolean isEmpty = (products == null || products.isEmpty());
+            
+            if (isEmpty) {
+                recyclerView.setVisibility(View.GONE);
+                layoutEmptyState.setVisibility(View.VISIBLE);
+                
+                String currentCategory = viewModel.getSelectedCategory().getValue();
+                if (currentCategory == null || currentCategory.equals("All")) {
+                    // Whole catalog is empty
+                    ivEmptyIcon.setImageResource(android.R.drawable.ic_menu_agenda);
+                    tvEmptyTitle.setText("Catalog is Empty");
+                    tvEmptySubtitle.setText("You haven't added any products yet.");
+                    btnEmptyAction.setText("Add Product");
+                    btnEmptyAction.setOnClickListener(v -> showProductDialog(null));
+                    
+                    // Hide FAB when no products exist at all
+                    if (fabAddProduct != null) fabAddProduct.setVisibility(View.GONE);
+                } else {
+                    // Filtered category is empty
+                    ivEmptyIcon.setImageResource(android.R.drawable.ic_menu_search);
+                    tvEmptyTitle.setText("No products in " + currentCategory);
+                    tvEmptySubtitle.setText("Try checking another category or add one.");
+                    btnEmptyAction.setText("View All");
+                    btnEmptyAction.setOnClickListener(v -> {
+                        viewModel.setSelectedCategory("All");
+                        // Manually check/reset chip if possible
+                        if (chipGroupCategories != null) {
+                            chipGroupCategories.check(R.id.chipAll);
+                        }
+                    });
+                    
+                    // Show FAB if products exist but are filtered out
+                    if (fabAddProduct != null) fabAddProduct.setVisibility(View.VISIBLE);
+                }
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                layoutEmptyState.setVisibility(View.GONE);
+                if (fabAddProduct != null) fabAddProduct.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void showProductDialog(Product productToEdit) {

@@ -29,6 +29,11 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.CountrySelectionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PosExpress" />
+        <activity
             android:name=".ui.QrScannerActivity"
             android:exported="false"
             android:screenOrientation="portrait"

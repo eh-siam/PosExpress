@@ -1,9 +1,12 @@
 package com.example.posexpress.repository;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import com.example.posexpress.model.Category;
 import com.example.posexpress.model.Order;
 import com.example.posexpress.model.Product;
+import com.example.posexpress.util.AppPreferences;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,16 +41,25 @@ public class PosRepository {
         void onError(String error);
     }
 
-    private PosRepository() {
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        productsRef = db.getReference("products");
-        ordersRef = db.getReference("orders");
-        categoriesRef = db.getReference("categories");
+    public interface OrderCallback {
+        void onOrdersChanged(List<Order> orders);
+        void onError(String error);
     }
 
-    public static synchronized PosRepository getInstance() {
+    private PosRepository(Context context) {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        AppPreferences prefs = new AppPreferences(context);
+        String countryCode = prefs.getCountryCode();
+        if (countryCode == null) countryCode = "BD"; // Default
+
+        productsRef = db.getReference("products").child(countryCode);
+        ordersRef = db.getReference("orders").child(countryCode);
+        categoriesRef = db.getReference("categories").child(countryCode);
+    }
+
+    public static synchronized PosRepository getInstance(Context context) {
         if (instance == null) {
-            instance = new PosRepository();
+            instance = new PosRepository(context.getApplicationContext());
         }
         return instance;
     }
@@ -126,6 +138,57 @@ public class PosRepository {
                     }
                 }
                 callback.onCategoriesChanged(categoryList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError(error.getMessage());
+            }
+        });
+    }
+
+    public void observeOrders(OrderCallback callback) {
+        ordersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Order> orders = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Order order = child.getValue(Order.class);
+                    if (order != null) {
+                        orders.add(order);
+                    }
+                }
+                callback.onOrdersChanged(orders);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError(error.getMessage());
+            }
+        });
+    }
+
+    public void fetchOrdersPage(int pageSize, String lastOrderId, OrderCallback callback) {
+        com.google.firebase.database.Query query;
+        if (lastOrderId == null) {
+            query = ordersRef.orderByKey().limitToLast(pageSize);
+        } else {
+            query = ordersRef.orderByKey().endBefore(lastOrderId).limitToLast(pageSize);
+        }
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Order> page = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Order order = child.getValue(Order.class);
+                    if (order != null) {
+                        page.add(order);
+                    }
+                }
+                // Firebase limitToLast returns in ascending order, we want newest first eventually
+                // but keeping repository logic simple.
+                callback.onOrdersChanged(page);
             }
 
             @Override

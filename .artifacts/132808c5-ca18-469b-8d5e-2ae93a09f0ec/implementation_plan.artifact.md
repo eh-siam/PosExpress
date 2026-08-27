@@ -1,36 +1,32 @@
-# Implementation Plan - Improve bKash QR Scanner Logic
+# Implementation Plan - Enhanced Catalog Empty State
 
-The user wants to know if their bKash QR code scanner works perfectly. The current implementation is basic and might fail for certain types of bKash QR codes (e.g., those containing URLs or country codes).
-
-## Analysis
-Current `extractNumber` logic:
-- Uses `\\d{11}` to find a sequence of 11 digits.
-- Returns the whole raw string if no match is found.
-
-Potential Issues:
-1.  **Country Code**: bKash numbers often appear as `8801XXXXXXXXX` (13 digits). The current regex would only extract the first 11 digits (`8801XXXXXXX`).
-2.  **Merchant URLs**: bKash merchant QRs are often URLs like `https://www.bkash.com/app/s/?s=01XXXXXXXXX`. While `\\d{11}` might work here, it's safer to look for the specific parameter `s`.
-3.  **Formatting**: The raw value might contain spaces or dashes.
+Improve the user experience when the catalog is empty or when a selected category has no products. This includes better visual design, actionable buttons, and accurate messaging.
 
 ## Proposed Changes
 
-### [Component Name] QrScannerActivity
+### [Component Name] UI Layer
 
-#### [MODIFY] [QrScannerActivity.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/ui/QrScannerActivity.java)
-- Improve `extractNumber` logic:
-    - Check if the raw string is a URL containing `?s=` or `&s=`.
-    - If it's a URL, extract the value of the `s` parameter.
-    - Clean the string by removing all non-digit characters.
-    - Handle 13-digit numbers starting with `880` by stripping the `880`.
-    - Ensure the final result is 11 digits starting with `01`.
+#### [MODIFY] [fragment_catalog.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/fragment_catalog.xml)
+- Redesign `layoutMainEmptyState`:
+    - Add an ID to the `TextView`s to update text dynamically.
+    - Add a "Clear Filter" or "Add Product" button within the empty state for better UX.
+    - Improve styling (centered, better spacing).
+
+#### [MODIFY] [CatalogFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/ui/CatalogFragment.java)
+- Update `updateUIState()` logic:
+    - Distinguish between "Total Catalog Empty" and "Filtered Results Empty".
+    - If total catalog is empty, show "Catalog is Empty" with an "Add Product" button.
+    - If a category is selected but has no items, show "No items in {Category}" with a "Clear Filter" button.
+- Dynamically update the empty state icon and text.
+
+### [Component Name] ViewModel
+
+#### [MODIFY] [PosViewModel.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/viewmodel/PosViewModel.java)
+- Ensure `applyFilter()` is called during initialization or when the first observer attaches to ensure the UI gets an initial state immediately.
 
 ## Verification Plan
 
-### Automated Tests
-- Build the project to ensure no syntax errors.
-
 ### Manual Verification
-- Test with different bKash QR code formats:
-    - Personal QR (e.g., `01712345678`)
-    - URL QR (e.g., `https://www.bkash.com/app/s/?s=01712345678`)
-    - Country Code QR (e.g., `8801712345678`)
+1. **Empty Catalog:** Delete all products. Verify the screen shows "Catalog is Empty" with an "Add Product" button.
+2. **Category Empty:** Select a category that has no products. Verify it shows "No items in {Category}" with a "View All" button.
+3. **Loading:** Verify the empty state does not appear while the progress bar is visible during initial load.

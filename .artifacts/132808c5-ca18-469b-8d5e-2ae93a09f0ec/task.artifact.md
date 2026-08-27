@@ -1,5 +1,4 @@
-- [x] Modify `AndroidManifest.xml` to update `QrScannerActivity` theme
-- [x] Verify build
-- [x] Improve `extractNumber` logic in `QrScannerActivity.java`
-- [x] Verify build again
-- [ ] Manual verification (by user)
+- [ ] Update `fragment_catalog.xml` with enhanced empty state UI
+- [ ] Implement dynamic empty state logic in `CatalogFragment.java`
+- [ ] Add "Clear Filter" action support in `PosViewModel`
+- [ ] Verify build and functionality

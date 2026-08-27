@@ -13,7 +13,26 @@
         <action
             android:id="@+id/action_catalogFragment_to_paymentFragment"
             app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_catalogFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.example.posexpress.ui.DashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_dashboardFragment_to_orderHistoryFragment"
+            app:destination="@id/orderHistoryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/orderHistoryFragment"
+        android:name="com.example.posexpress.ui.OrderHistoryFragment"
+        android:label="Order History"
+        tools:layout="@layout/fragment_order_history" />
 
     <fragment
         android:id="@+id/paymentFragment"

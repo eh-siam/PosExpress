@@ -166,12 +166,13 @@ public class ReceiptFragment extends Fragment {
             tvCustomerInfo.setText(customerDisplay);
             tvOrderType.setText(orderType);
 
-            tvSubtotal.setText(String.format(Locale.getDefault(), "$%.2f", subtotal));
+            String sym = viewModel.getCurrencySymbol();
+            tvSubtotal.setText(String.format(Locale.getDefault(), "%s%.2f", sym, subtotal));
             tvDiscountLabel.setText(String.format(Locale.getDefault(), "Discount (%.1f%%)", discountPercent));
-            tvDiscountAmount.setText(String.format(Locale.getDefault(), "-$%.2f", discountAmount));
+            tvDiscountAmount.setText(String.format(Locale.getDefault(), "-%s%.2f", sym, discountAmount));
             tvTaxLabel.setText(String.format(Locale.getDefault(), "VAT (%.1f%%)", taxPercent));
-            tvTaxAmount.setText(String.format(Locale.getDefault(), "+$%.2f", taxAmount));
-            tvGrandTotal.setText(String.format(Locale.getDefault(), "$%.2f", amount));
+            tvTaxAmount.setText(String.format(Locale.getDefault(), "+%s%.2f", sym, taxAmount));
+            tvGrandTotal.setText(String.format(Locale.getDefault(), "%s%.2f", sym, amount));
 
             generateQRCode(txnId);
 

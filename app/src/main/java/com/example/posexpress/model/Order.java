@@ -82,25 +82,18 @@ public class Order {
 
     public String getOrderType() { return orderType; }
     public void setOrderType(String orderType) { this.orderType = orderType; }
-
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }
-
     public String getCustomerPhone() { return customerPhone; }
     public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
-
     public double getSubtotal() { return subtotal; }
     public void setSubtotal(double subtotal) { this.subtotal = subtotal; }
-
     public double getDiscountAmount() { return discountAmount; }
     public void setDiscountAmount(double discountAmount) { this.discountAmount = discountAmount; }
-
     public double getTaxAmount() { return taxAmount; }
     public void setTaxAmount(double taxAmount) { this.taxAmount = taxAmount; }
-
     public double getDiscountPercent() { return discountPercent; }
     public void setDiscountPercent(double discountPercent) { this.discountPercent = discountPercent; }
-
     public double getTaxPercent() { return taxPercent; }
     public void setTaxPercent(double taxPercent) { this.taxPercent = taxPercent; }
 }

@@ -1,22 +1,34 @@
 package com.example.posexpress.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.posexpress.model.Category;
+import com.example.posexpress.model.Order;
 import com.example.posexpress.model.Product;
 import com.example.posexpress.repository.PosRepository;
+import com.example.posexpress.util.AppPreferences;
+import com.example.posexpress.util.CountryConfig;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class PosViewModel extends ViewModel {
+public class PosViewModel extends AndroidViewModel {
 
-    private final PosRepository repository = PosRepository.getInstance();
+    private final PosRepository repository;
     
-    private final MutableLiveData<List<Product>> productList = new MutableLiveData<>();
-    private final MutableLiveData<List<Product>> filteredProductList = new MutableLiveData<>();
+    private final MutableLiveData<List<Product>> productList = new MutableLiveData<>(new ArrayList<>());
+    private final MediatorLiveData<List<Product>> filteredProductList = new MediatorLiveData<>();
     private final MutableLiveData<List<Category>> categoryList = new MutableLiveData<>();
     private final MutableLiveData<Map<Integer, Integer>> cartQuantities = new MutableLiveData<>();
     private final MutableLiveData<Double> totalAmount = new MutableLiveData<>(0.0);
@@ -25,17 +37,44 @@ public class PosViewModel extends ViewModel {
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<String> selectedCategory = new MutableLiveData<>("All");
 
+    // Dashboard Data
+    private final MutableLiveData<List<Order>> allOrders = new MutableLiveData<>(new ArrayList<>());
+    private final MutableLiveData<Double> todaySales = new MutableLiveData<>(0.0);
+    private final MutableLiveData<Integer> todayTxnCount = new MutableLiveData<>(0);
+    private final MutableLiveData<Map<String, Double>> methodStats = new MutableLiveData<>(new HashMap<>());
+    private boolean isObservingOrders = false;
+
+    // Order Pagination State
+    private final MutableLiveData<List<Order>> paginatedOrders = new MutableLiveData<>(new ArrayList<>());
+    private final int ORDER_PAGE_SIZE = 15;
+    private String lastLoadedOrderId = null;
+    private boolean isLastOrderPage = false;
+    private final MutableLiveData<Boolean> isLoadingMoreOrders = new MutableLiveData<>(false);
+
     // Pagination State
     private final int PAGE_SIZE = 10;
     private String lastLoadedId = null;
     private boolean isLastPage = false;
     private final MutableLiveData<Boolean> isLoadingMore = new MutableLiveData<>(false);
 
+    public PosViewModel(@NonNull Application application) {
+        super(application);
+        this.repository = PosRepository.getInstance(application);
+        filteredProductList.addSource(productList, products -> applyFilter());
+        filteredProductList.addSource(selectedCategory, category -> applyFilter());
+    }
+
     public void startObservingData() {
+        // If data is already loaded, don't restart observation
+        List<Product> currentProducts = productList.getValue();
+        if (currentProducts != null && !currentProducts.isEmpty()) {
+            return;
+        }
+
         isLoading.setValue(true);
         lastLoadedId = null;
         isLastPage = false;
-        productList.setValue(new ArrayList<>()); // Reset list
+        // productList is already initialized
         
         // Observe Categories
         repository.observeCategories(new PosRepository.CategoryCallback() {
@@ -85,7 +124,6 @@ public class PosViewModel extends ViewModel {
                     }
                 }
                 
-                applyFilter();
                 calculateTotal();
                 isLoading.setValue(false);
                 isLoadingMore.setValue(false);
@@ -108,6 +146,146 @@ public class PosViewModel extends ViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<Boolean> getIsLoadingMore() { return isLoadingMore; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
+    public LiveData<String> getSelectedCategory() { return selectedCategory; }
+
+    public String getCurrencySymbol() {
+        CountryConfig country = new AppPreferences(getApplication()).getSelectedCountry();
+        return country != null ? country.getCurrencySymbol() : "$";
+    }
+
+    public CountryConfig getSelectedCountry() {
+        return new AppPreferences(getApplication()).getSelectedCountry();
+    }
+
+    // Dashboard Getters
+    public LiveData<Double> getTodaySales() { return todaySales; }
+    public LiveData<Integer> getTodayTxnCount() { return todayTxnCount; }
+    public LiveData<Map<String, Double>> getMethodStats() { return methodStats; }
+    public LiveData<List<Order>> getAllOrders() { return allOrders; }
+    public LiveData<List<Order>> getPaginatedOrders() { return paginatedOrders; }
+    public LiveData<Boolean> getIsLoadingMoreOrders() { return isLoadingMoreOrders; }
+
+    public void loadNextOrderPage() {
+        if (isLastOrderPage || Boolean.TRUE.equals(isLoadingMoreOrders.getValue())) {
+            return;
+        }
+
+        isLoadingMoreOrders.setValue(true);
+
+        repository.fetchOrdersPage(ORDER_PAGE_SIZE, lastLoadedOrderId, new PosRepository.OrderCallback() {
+            @Override
+            public void onOrdersChanged(List<Order> page) {
+                List<Order> currentList = paginatedOrders.getValue();
+                if (currentList == null) currentList = new ArrayList<>();
+
+                if (page.isEmpty()) {
+                    isLastOrderPage = true;
+                } else {
+                    // Firebase limitToLast returns ascending, but for UI we want descending
+                    // Sort the page itself descending
+                    page.sort((o1, o2) -> {
+                        long t1 = (o1.getTimestamp() instanceof Long) ? (Long) o1.getTimestamp() : 0;
+                        long t2 = (o2.getTimestamp() instanceof Long) ? (Long) o2.getTimestamp() : 0;
+                        return Long.compare(t2, t1);
+                    });
+
+                    currentList.addAll(page);
+                    paginatedOrders.setValue(new ArrayList<>(currentList));
+                    
+                    // The last item in limitToLast ascending is the 'newest' in that chunk
+                    // But we are querying with endBefore(lastOrderId).
+                    // So we need the 'oldest' key in the current batch to be the anchor for the next endBefore.
+                    // In ascending, that's index 0.
+                    lastLoadedOrderId = page.get(page.size() - 1).getOrderId();
+                    // Wait, if it's limitToLast, index 0 is the smallest (oldest) key in that batch.
+                    // Let's find the absolute oldest key in this batch.
+                    String oldestKey = page.get(0).getOrderId();
+                    for(Order o : page) {
+                        if (o.getOrderId().compareTo(oldestKey) < 0) {
+                            oldestKey = o.getOrderId();
+                        }
+                    }
+                    lastLoadedOrderId = oldestKey;
+
+                    if (page.size() < ORDER_PAGE_SIZE) {
+                        isLastOrderPage = true;
+                    }
+                }
+                isLoadingMoreOrders.setValue(false);
+            }
+
+            @Override
+            public void onError(String error) {
+                errorMessage.setValue(error);
+                isLoadingMoreOrders.setValue(false);
+            }
+        });
+    }
+
+    public void resetOrderPagination() {
+        lastLoadedOrderId = null;
+        isLastOrderPage = false;
+        paginatedOrders.setValue(new ArrayList<>());
+        loadNextOrderPage();
+    }
+
+    public void startObservingOrders() {
+        if (isObservingOrders) return;
+        
+        isObservingOrders = true;
+        repository.observeOrders(new PosRepository.OrderCallback() {
+            @Override
+            public void onOrdersChanged(List<Order> orders) {
+                allOrders.setValue(orders);
+                calculateDashboardStats(orders);
+            }
+
+            @Override
+            public void onError(String error) {
+                errorMessage.setValue("Orders: " + error);
+            }
+        });
+    }
+
+    private void calculateDashboardStats(List<Order> orders) {
+        double totalSales = 0.0;
+        int txnCount = 0;
+        Map<String, Double> stats = new HashMap<>();
+        stats.put("EMV Card Payment", 0.0);
+        stats.put("e-Wallet / QR Code", 0.0);
+        stats.put("Cash Payment", 0.0);
+        stats.put("bKash Payment", 0.0);
+
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        long todayStart = today.getTimeInMillis();
+
+        for (Order order : orders) {
+            long timestamp = 0;
+            if (order.getTimestamp() instanceof Long) {
+                timestamp = (Long) order.getTimestamp();
+            }
+
+            if (timestamp >= todayStart) {
+                totalSales += order.getTotalAmount();
+                txnCount++;
+
+                String method = order.getPaymentMethod();
+                if (method != null) {
+                    Double current = stats.get(method);
+                    if (current == null) current = 0.0;
+                    stats.put(method, current + order.getTotalAmount());
+                }
+            }
+        }
+
+        todaySales.setValue(totalSales);
+        todayTxnCount.setValue(txnCount);
+        methodStats.setValue(stats);
+    }
 
     public void updateQuantity(Product product, int quantity) {
         repository.updateCartQuantity(product.getId(), quantity);
@@ -216,12 +394,15 @@ public class PosViewModel extends ViewModel {
 
     private void applyFilter() {
         List<Product> allProducts = productList.getValue();
+        if (allProducts == null) {
+            filteredProductList.setValue(new ArrayList<>());
+            return;
+        }
+
         String filter = selectedCategory.getValue();
         
-        if (allProducts == null) return;
-        
         if (filter == null || filter.equals("All")) {
-            filteredProductList.setValue(allProducts);
+            filteredProductList.setValue(new ArrayList<>(allProducts));
         } else {
             List<Product> filtered = new ArrayList<>();
             for (Product p : allProducts) {

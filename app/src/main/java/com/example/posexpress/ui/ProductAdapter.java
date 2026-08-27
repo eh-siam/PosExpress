@@ -57,7 +57,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = productList.get(position);
         holder.tvName.setText(product.getName());
-        holder.tvPrice.setText(String.format(Locale.getDefault(), "$%.2f", product.getPrice()));
+        
+        com.example.posexpress.util.CountryConfig country = new com.example.posexpress.util.AppPreferences(holder.itemView.getContext()).getSelectedCountry();
+        String sym = country != null ? country.getCurrencySymbol() : "$";
+        holder.tvPrice.setText(String.format(Locale.getDefault(), "%s%.2f", sym, product.getPrice()));
         
         String category = product.getCategory();
         if (category == null || category.isEmpty()) {
