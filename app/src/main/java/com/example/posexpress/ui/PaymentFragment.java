@@ -69,6 +69,18 @@ public class PaymentFragment extends Fragment {
             }
     );
 
+    private final ActivityResultLauncher<Intent> onlinePaymentLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                    String jsonResult = result.getData().getStringExtra("payment_result");
+                    if (jsonResult != null) {
+                        finalizeWithGatewayResult(jsonResult);
+                    }
+                }
+            }
+    );
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -126,10 +138,28 @@ public class PaymentFragment extends Fragment {
         btnPayNow.setOnClickListener(v -> {
             if ("e-Wallet / QR Code".equals(selectedMethodName)) {
                 showBkashDialog();
+            } else if ("EMV Card Payment".equals(selectedMethodName)) {
+                launchOnlineGateway();
             } else {
-                processPayment(selectedMethodName, "");
+                processStandardPayment(selectedMethodName, "");
             }
         });
+    }
+
+    private void launchOnlineGateway() {
+        Intent intent = new Intent(requireContext(), OnlinePaymentActivity.class);
+        intent.putExtra("amount", viewModel.getTotalAmount().getValue());
+        intent.putExtra("currency_symbol", viewModel.getCurrencySymbol());
+        onlinePaymentLauncher.launch(intent);
+    }
+
+    private void finalizeWithGatewayResult(String gatewayJson) {
+        try {
+            JSONObject gatewayObj = new JSONObject(gatewayJson);
+            processGatewayPayment("Online Card Payment", gatewayObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showBkashDialog() {
@@ -146,12 +176,7 @@ public class PaymentFragment extends Fragment {
                 .setView(dialogView)
                 .setPositiveButton("Confirm", (dialog, which) -> {
                     String bkashNumber = etBkashNumberInDialog.getText().toString().trim();
-                    if (bkashNumber.length() == 11) {
-                        processPayment("bKash Payment", bkashNumber);
-                    } else {
-                        // For simplicity, just proceeding, but in real app you'd validate
-                        processPayment("bKash Payment", bkashNumber);
-                    }
+                    processStandardPayment("bKash Payment", bkashNumber);
                     etBkashNumberInDialog = null; // Clear reference
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> etBkashNumberInDialog = null)
@@ -201,15 +226,23 @@ public class PaymentFragment extends Fragment {
         return Math.round(dp * density);
     }
 
-    private void processPayment(String method, String bkashNumber) {
+    private void processStandardPayment(String method, String bkashNumber) {
+        executePayment(method, bkashNumber, null);
+    }
+
+    private void processGatewayPayment(String method, JSONObject gatewayResult) {
+        executePayment(method, "", gatewayResult);
+    }
+
+    private void executePayment(String method, String infoStr, JSONObject gatewayResult) {
         loadingOverlay.setVisibility(View.VISIBLE);
         btnPayNow.setEnabled(false);
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
                 double subtotal = viewModel.getTotalAmount().getValue();
-                double discountPercent = 5.0; // Requirement: 5%
-                double taxPercent = 7.5; // Requirement: 7.5%
+                double discountPercent = 5.0; 
+                double taxPercent = 7.5; 
                 
                 double discountAmount = subtotal * (discountPercent / 100.0);
                 double taxAmount = (subtotal - discountAmount) * (taxPercent / 100.0);
@@ -231,8 +264,14 @@ public class PaymentFragment extends Fragment {
                 response.put("tax_percent", taxPercent);
                 response.put("method", method);
                 response.put("order_type", orderType);
-                if (!bkashNumber.isEmpty()) {
-                    response.put("bkash_number", bkashNumber);
+
+                if (gatewayResult != null) {
+                    response.put("card_type", gatewayResult.optString("card_type"));
+                    response.put("masked_card", gatewayResult.optString("masked_card"));
+                    response.put("auth_code", gatewayResult.optString("auth_code"));
+                    response.put("gateway", gatewayResult.optString("gateway"));
+                } else if (!infoStr.isEmpty()) {
+                    response.put("bkash_number", infoStr);
                 }
                 
                 JSONArray itemsArray = new JSONArray();
@@ -258,9 +297,7 @@ public class PaymentFragment extends Fragment {
                 response.put("items", itemsArray);
 
                 viewModel.setTransactionJson(response.toString());
-                
-                // NEW: Place order in Firebase database with all details
-                viewModel.placeOrder(method, txnId, orderType, "", bkashNumber,
+                viewModel.placeOrder(method, txnId, orderType, "", infoStr,
                         subtotal, discountAmount, taxAmount, discountPercent, taxPercent, totalAmount);
                 
                 Navigation.findNavController(requireView()).navigate(R.id.action_paymentFragment_to_receiptFragment);

@@ -7,6 +7,8 @@ import com.example.posexpress.model.Category;
 import com.example.posexpress.model.Order;
 import com.example.posexpress.model.Product;
 import com.example.posexpress.util.AppPreferences;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,13 +50,20 @@ public class PosRepository {
 
     private PosRepository(Context context) {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
+        try {
+            db.setPersistenceEnabled(true);
+        } catch (Exception ignored) {} 
+
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) uid = "guest"; // Should not happen with Auth flow
+
         AppPreferences prefs = new AppPreferences(context);
         String countryCode = prefs.getCountryCode();
-        if (countryCode == null) countryCode = "BD"; // Default
+        if (countryCode == null) countryCode = "BD"; 
 
-        productsRef = db.getReference("products").child(countryCode);
-        ordersRef = db.getReference("orders").child(countryCode);
-        categoriesRef = db.getReference("categories").child(countryCode);
+        productsRef = db.getReference("users").child(uid).child("products").child(countryCode);
+        ordersRef = db.getReference("users").child(uid).child("orders").child(countryCode);
+        categoriesRef = db.getReference("users").child(uid).child("categories").child(countryCode);
     }
 
     public static synchronized PosRepository getInstance(Context context) {
@@ -62,6 +71,10 @@ public class PosRepository {
             instance = new PosRepository(context.getApplicationContext());
         }
         return instance;
+    }
+
+    public static synchronized void resetInstance() {
+        instance = null;
     }
 
     /**
@@ -206,17 +219,17 @@ public class PosRepository {
         }
     }
 
-    public void addProduct(Product product) {
-        productsRef.child(String.valueOf(product.getId())).setValue(product);
+    public Task<Void> addProduct(Product product) {
+        return productsRef.child(String.valueOf(product.getId())).setValue(product);
     }
 
-    public void updateProduct(Product product) {
-        productsRef.child(String.valueOf(product.getId())).setValue(product);
+    public Task<Void> updateProduct(Product product) {
+        return productsRef.child(String.valueOf(product.getId())).setValue(product);
     }
 
-    public void deleteProduct(Product product) {
-        productsRef.child(String.valueOf(product.getId())).removeValue();
+    public Task<Void> deleteProduct(Product product) {
         cartQuantities.remove(product.getId());
+        return productsRef.child(String.valueOf(product.getId())).removeValue();
     }
 
     /**

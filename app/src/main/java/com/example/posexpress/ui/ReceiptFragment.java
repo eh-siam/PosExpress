@@ -39,6 +39,8 @@ public class ReceiptFragment extends Fragment {
     private PosViewModel viewModel;
     private TextView tvTxnId, tvMethod, tvTimestamp, tvCustomerInfo, tvOrderType;
     private TextView tvSubtotal, tvDiscountLabel, tvDiscountAmount, tvTaxLabel, tvTaxAmount, tvGrandTotal;
+    private TextView tvCardType, tvCardNumber, tvAuthCode;
+    private View layoutCardDetails;
     private android.widget.ImageView ivQrCode;
     private android.widget.LinearLayout layoutItemsList;
 
@@ -67,6 +69,11 @@ public class ReceiptFragment extends Fragment {
         tvTaxAmount = view.findViewById(R.id.tvTaxAmount);
         tvGrandTotal = view.findViewById(R.id.tvGrandTotal);
         
+        tvCardType = view.findViewById(R.id.tvCardType);
+        tvCardNumber = view.findViewById(R.id.tvCardNumber);
+        tvAuthCode = view.findViewById(R.id.tvAuthCode);
+        layoutCardDetails = view.findViewById(R.id.layoutCardDetails);
+
         ivQrCode = view.findViewById(R.id.ivQrCode);
         
         layoutItemsList = view.findViewById(R.id.layoutItemsList);
@@ -173,6 +180,17 @@ public class ReceiptFragment extends Fragment {
             tvTaxLabel.setText(String.format(Locale.getDefault(), "VAT (%.1f%%)", taxPercent));
             tvTaxAmount.setText(String.format(Locale.getDefault(), "+%s%.2f", sym, taxAmount));
             tvGrandTotal.setText(String.format(Locale.getDefault(), "%s%.2f", sym, amount));
+
+            // Card Details
+            String cardType = response.optString("card_type", "");
+            if (!cardType.isEmpty()) {
+                layoutCardDetails.setVisibility(View.VISIBLE);
+                tvCardType.setText(cardType);
+                tvCardNumber.setText(response.optString("masked_card", ""));
+                tvAuthCode.setText(response.optString("auth_code", ""));
+            } else {
+                layoutCardDetails.setVisibility(View.GONE);
+            }
 
             generateQRCode(txnId);
 

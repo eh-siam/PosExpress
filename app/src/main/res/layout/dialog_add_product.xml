@@ -51,9 +51,10 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilProductPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Price ($)"
+            android:hint="Price"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             app:startIconDrawable="@android:drawable/ic_menu_save"
             app:startIconTint="@color/primaryNavy"

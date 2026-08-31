@@ -1,32 +1,54 @@
-# Implementation Plan - Enhanced Catalog Empty State
+# Implementation Plan - Migrating to Jetpack Compose (Modernization Phase)
 
-Improve the user experience when the catalog is empty or when a selected category has no products. This includes better visual design, actionable buttons, and accurate messaging.
+Convert the existing Java/XML project into a modern Kotlin/Compose application using a hybrid approach.
 
 ## Proposed Changes
 
-### [Component Name] UI Layer
+### Phase 1: Project Modernization (Enable Kotlin & Compose)
 
-#### [MODIFY] [fragment_catalog.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/fragment_catalog.xml)
-- Redesign `layoutMainEmptyState`:
-    - Add an ID to the `TextView`s to update text dynamically.
-    - Add a "Clear Filter" or "Add Product" button within the empty state for better UX.
-    - Improve styling (centered, better spacing).
+#### [MODIFY] [libs.versions.toml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/gradle/libs.versions.toml)
+- Add versions for Kotlin (`2.0.21`), Compose BOM (`2026.08.00`), and Compose Compiler.
+- Add libraries for Compose UI, Material 3, and Activity Compose.
+- Add Kotlin Android and Compose Compiler plugins.
 
-#### [MODIFY] [CatalogFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/ui/CatalogFragment.java)
-- Update `updateUIState()` logic:
-    - Distinguish between "Total Catalog Empty" and "Filtered Results Empty".
-    - If total catalog is empty, show "Catalog is Empty" with an "Add Product" button.
-    - If a category is selected but has no items, show "No items in {Category}" with a "Clear Filter" button.
-- Dynamically update the empty state icon and text.
+#### [MODIFY] [build.gradle.kts (Project)](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/build.gradle.kts)
+- Add the Kotlin Android and Compose Compiler plugin aliases.
 
-### [Component Name] ViewModel
+#### [MODIFY] [app/build.gradle.kts](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/build.gradle.kts)
+- Apply Kotlin and Compose Compiler plugins.
+- Enable `buildFeatures.compose`.
+- Configure `composeOptions`.
+- Add Compose BOM and core libraries to `dependencies`.
 
-#### [MODIFY] [PosViewModel.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/viewmodel/PosViewModel.java)
-- Ensure `applyFilter()` is called during initialization or when the first observer attaches to ensure the UI gets an initial state immediately.
+---
+
+### Phase 2: Data Migration (Kotlin Conversion)
+
+#### [NEW] [Product.kt](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/model/Product.kt)
+- Convert `Product.java` to a Kotlin Data Class.
+
+#### [NEW] [Category.kt](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/model/Category.kt)
+- Convert `Category.java` to a Kotlin Data Class.
+
+#### [NEW] [Order.kt](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/model/Order.kt)
+- Convert `Order.java` to a Kotlin Data Class.
+
+#### [DELETE] Original Java Models
+- Remove `.java` files once Kotlin equivalents are verified.
+
+---
+
+### Phase 3: First Compose Screen (Splash Screen)
+
+#### [NEW] [SplashActivity.kt](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/example/posexpress/ui/SplashActivity.kt)
+- Re-implement the Splash screen using Jetpack Compose for a smooth entry into the new UI stack.
 
 ## Verification Plan
 
+### Automated Tests
+- `gradle sync` to verify dependencies.
+- `gradle assembleDebug` to ensure compilation.
+
 ### Manual Verification
-1. **Empty Catalog:** Delete all products. Verify the screen shows "Catalog is Empty" with an "Add Product" button.
-2. **Category Empty:** Select a category that has no products. Verify it shows "No items in {Category}" with a "View All" button.
-3. **Loading:** Verify the empty state does not appear while the progress bar is visible during initial load.
+- Launch the app and verify the new Kotlin-based Splash screen works correctly.
+- Ensure the rest of the Java/XML app still functions in Hybrid mode.

@@ -200,6 +200,43 @@
                         </TableRow>
                     </TableLayout>
 
+                    <!-- Card Details Section (Only for EMV) -->
+                    <LinearLayout
+                        android:id="@+id/layoutCardDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:background="@drawable/dashed_divider"
+                            android:layout_marginVertical="20dp"
+                            android:layerType="software" />
+
+                        <TableLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:stretchColumns="1">
+
+                            <TableRow android:layout_marginBottom="8dp">
+                                <TextView android:text="Card Type" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                                <TextView android:id="@+id/tvCardType" android:text="Visa" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                            </TableRow>
+
+                            <TableRow android:layout_marginBottom="8dp">
+                                <TextView android:text="Card Number" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                                <TextView android:id="@+id/tvCardNumber" android:text="**** **** **** 4242" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                            </TableRow>
+
+                            <TableRow>
+                                <TextView android:text="Auth Code" android:textColor="@color/textSecondary" android:textSize="13sp" />
+                                <TextView android:id="@+id/tvAuthCode" android:text="123456" android:textColor="@color/textPrimary" android:textStyle="bold" android:gravity="end" android:textSize="13sp" />
+                            </TableRow>
+                        </TableLayout>
+                    </LinearLayout>
+
                     <!-- QR Code Footer -->
                     <TextView
                         android:layout_width="wrap_content"

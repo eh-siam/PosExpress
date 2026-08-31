@@ -21,22 +21,41 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PaySwift POS"
+                android:text="@string/title_catalog"
                 android:textColor="@color/primaryNavy"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:layout_gravity="center" />
 
-            <ImageButton
-                android:id="@+id/btnDashboard"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="end"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_today"
-                app:tint="@color/primaryNavy"
-                android:contentDescription="Dashboard" />
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_settings_modern"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    app:tint="@color/primaryNavy"
+                    android:contentDescription="@string/desc_settings" />
+
+                <ImageButton
+                    android:id="@+id/btnDashboard"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_dashboard_modern"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    app:tint="@color/primaryNavy"
+                    android:contentDescription="@string/desc_dashboard" />
+            </LinearLayout>
 
         </com.google.android.material.appbar.MaterialToolbar>
 
@@ -59,7 +78,7 @@
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="All"
+                    android:text="@string/chip_all"
                     android:checked="true" />
 
             </com.google.android.material.chip.ChipGroup>
@@ -72,8 +91,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appBar"
-        android:paddingTop="8dp"
-        android:paddingBottom="120dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="100dp"
         android:clipToPadding="false" />
 
     <ProgressBar
@@ -95,41 +114,56 @@
         android:padding="32dp"
         android:visibility="gone">
 
-        <ImageView
-            android:id="@+id/ivEmptyIcon"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@android:drawable/ic_menu_agenda"
-            app:tint="@color/surfaceVariant" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            app:cardCornerRadius="100dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#F1F3FB">
+
+            <ImageView
+                android:id="@+id/ivEmptyIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="32dp"
+                android:src="@drawable/ic_inventory_modern"
+                app:tint="@color/primaryNavy" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tvEmptyTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Catalog is Empty"
-            android:textSize="20sp"
+            android:text="@string/empty_catalog_title"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="@color/textPrimary"
-            android:layout_marginTop="24dp" />
+            android:textColor="@color/primaryNavy"
+            android:layout_marginTop="20dp"
+            android:letterSpacing="0.02" />
 
         <TextView
             android:id="@+id/tvEmptySubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tap the '+' button to add your first product."
-            android:textSize="14sp"
+            android:text="@string/empty_catalog_subtitle"
+            android:textSize="15sp"
             android:textColor="@color/textSecondary"
             android:textAlignment="center"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="4dp"
+            android:maxWidth="280dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEmptyAction"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.PaySwift.Button.Premium"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Add Product"
-            app:cornerRadius="12dp" />
+            android:layout_height="64dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/btn_add_product"
+            android:paddingHorizontal="32dp"
+            app:cornerRadius="16dp" />
 
     </LinearLayout>
 
@@ -162,7 +196,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Amount"
+                    android:text="@string/label_total_amount"
                     android:textColor="#BDBDBD"
                     android:textSize="12sp" />
 
@@ -181,7 +215,7 @@
                 style="@style/Widget.PaySwift.Button.Premium"
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
-                android:text="Checkout"
+                android:text="@string/btn_checkout"
                 android:paddingHorizontal="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -198,10 +232,11 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
         android:layout_marginBottom="8dp"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_add_modern"
         app:backgroundTint="@color/white"
         app:tint="@color/primaryNavy"
         app:elevation="4dp"
+        android:contentDescription="@string/btn_add_product"
         />
 
 </RelativeLayout>
