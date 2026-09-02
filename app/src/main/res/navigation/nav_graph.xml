@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/catalogFragment"
-        android:name="com.example.posexpress.ui.CatalogFragment"
+        android:name="com.max.posexpress.ui.CatalogFragment"
         android:label="Catalog"
         tools:layout="@layout/fragment_catalog">
         <action
@@ -23,13 +23,13 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.posexpress.ui.SettingsFragment"
+        android:name="com.max.posexpress.ui.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/dashboardFragment"
-        android:name="com.example.posexpress.ui.DashboardFragment"
+        android:name="com.max.posexpress.ui.DashboardFragment"
         android:label="Dashboard"
         tools:layout="@layout/fragment_dashboard" >
         <action
@@ -39,13 +39,13 @@
 
     <fragment
         android:id="@+id/orderHistoryFragment"
-        android:name="com.example.posexpress.ui.OrderHistoryFragment"
+        android:name="com.max.posexpress.ui.OrderHistoryFragment"
         android:label="Order History"
         tools:layout="@layout/fragment_order_history" />
 
     <fragment
         android:id="@+id/paymentFragment"
-        android:name="com.example.posexpress.ui.PaymentFragment"
+        android:name="com.max.posexpress.ui.PaymentFragment"
         android:label="Payment"
         tools:layout="@layout/fragment_payment">
         <action
@@ -56,7 +56,7 @@
 
     <fragment
         android:id="@+id/receiptFragment"
-        android:name="com.example.posexpress.ui.ReceiptFragment"
+        android:name="com.max.posexpress.ui.ReceiptFragment"
         android:label="Receipt"
         tools:layout="@layout/fragment_receipt">
         <action

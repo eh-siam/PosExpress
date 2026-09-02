@@ -1,0 +1,7 @@
+- [ ] Refactor `activity_login.xml` for internal card aesthetics
+    - [ ] Remove "Merchant Login" title
+    - [ ] Add "Forgot Password?" text
+    - [ ] Add "OR" divider
+    - [ ] Refine vertical spacing
+- [ ] Verify UI layout
+- [ ] Finalize walkthrough

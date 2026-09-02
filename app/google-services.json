@@ -42,6 +42,43 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889078473653:android:2c92ba2431ff2611ce6ffc",
+        "android_client_info": {
+          "package_name": "com.max.posexpress"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889078473653-7djdkpq0774huu5dnq17u2gli1nb67l5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.max.posexpress",
+            "certificate_hash": "a6be633f0da95c6c474f5787dba947bb2ea0e1a8"
+          }
+        },
+        {
+          "client_id": "889078473653-r522q4h2vh95usgsricitqv4aogka48p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ25EkC0sBNStPwoGeIie4hfbTa9R99aw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889078473653-r522q4h2vh95usgsricitqv4aogka48p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

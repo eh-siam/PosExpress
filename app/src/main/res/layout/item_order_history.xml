@@ -4,76 +4,100 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
     app:strokeWidth="1dp"
-    app:strokeColor="@color/divider">
+    app:strokeColor="#E0E0E0">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvIconContainer"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:cardBackgroundColor="@color/surfaceVariant"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tvOrderTime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="2026-08-27 12:00"
-                android:textColor="@color/textSecondary"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvOrderAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$0.00"
-                android:textColor="@color/primaryNavy"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/ivPaymentIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_history_modern"
+                android:contentDescription="@string/desc_payment_icon"
+                app:tint="@color/primaryNavy" />
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tvOrderId"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:text="TXN_123456789"
             android:textColor="@color/textPrimary"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:layout_marginTop="4dp" />
+            app:layout_constraintEnd_toStartOf="@+id/tvOrderAmount"
+            app:layout_constraintStart_toEndOf="@id/cvIconContainer"
+            app:layout_constraintTop_toTopOf="@id/cvIconContainer" />
+
+        <TextView
+            android:id="@+id/tvOrderTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:30 AM"
+            android:textColor="@color/textSecondary"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@id/tvOrderId"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderId" />
+
+        <TextView
+            android:id="@+id/tvOrderItems"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Item 1, Item 2"
+            android:textColor="@color/textSecondary"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/tvOrderMethod"
+            app:layout_constraintStart_toStartOf="@id/tvOrderId"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderTime" />
+
+        <TextView
+            android:id="@+id/tvOrderAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$120.00"
+            android:textColor="@color/primaryNavy"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvOrderId" />
 
         <TextView
             android:id="@+id/tvOrderMethod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cash Payment"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/badge_background"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="Cash"
             android:textColor="@color/successEmerald"
-            android:textSize="12sp"
-            android:layout_marginTop="2dp" />
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderAmount" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider"
-            android:layout_marginVertical="12dp" />
-
-        <TextView
-            android:id="@+id/tvOrderItems"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Item 1 x1, Item 2 x2"
-            android:textColor="@color/textSecondary"
-            android:textSize="13sp" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

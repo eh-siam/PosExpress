@@ -1,48 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryNavy">
 
+    <!-- Decorative Header Background -->
+    <View
+        android:id="@+id/splashBgHeader"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/bg_login_header"
+        android:alpha="0.3"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Center Branding Container -->
     <LinearLayout
+        android:id="@+id/llBranding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvLogoSplash"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@mipmap/ic_launcher"
-            android:contentDescription="App Icon" />
+            android:alpha="0"
+            app:cardCornerRadius="60dp"
+            app:cardElevation="12dp"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp"
+                android:src="@mipmap/ic_launcher_round"
+                android:contentDescription="@string/app_name" />
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
+            android:id="@+id/tvAppNameSplash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="POSExpress"
-            android:textSize="28sp"
+            android:layout_marginTop="24dp"
+            android:alpha="0"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:letterSpacing="0.05" />
 
         <TextView
+            android:id="@+id/tvTaglineSplash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Fast • Secure • Reliable"
+            android:alpha="0"
+            android:text="@string/splash_tagline"
+            android:textColor="#BDBDBD"
             android:textSize="16sp"
-            android:textColor="#E0E0E0" />
+            android:textStyle="italic" />
 
     </LinearLayout>
 
-    <ProgressBar
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="64dp"
-        android:indeterminateTint="@color/white"
-        style="?android:attr/progressBarStyleSmall" />
+    <!-- Footer Branding -->
+    <TextView
+        android:id="@+id/tvFooterSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:alpha="0"
+        android:text="@string/splash_footer"
+        android:textColor="#9FA8DA"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</RelativeLayout>
+    <ProgressBar
+        android:id="@+id/pbSplash"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="24dp"
+        android:indeterminateTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/tvFooterSplash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
