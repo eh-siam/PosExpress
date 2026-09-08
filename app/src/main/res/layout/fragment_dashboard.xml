@@ -1,117 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundOffWhite"
     android:fitsSystemWindows="true">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
+    <!-- Custom Header -->
+    <LinearLayout
+        android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@android:drawable/ic_menu_revert"
-            app:title="Sales Dashboard"
-            app:titleTextColor="@color/primaryNavy" />
-    </com.google.android.material.appbar.AppBarLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_dashboard"
+                android:textColor="@color/primaryNavy"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvHeaderSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sunday, 6 Sep 2026"
+                android:textColor="@color/textSecondary"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnSettings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_settings_modern"
+                app:tint="@color/primaryNavy" />
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBar">
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="32dp"
-            android:padding="20dp">
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="32dp">
 
             <!-- Today's Summary Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="8dp"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="4dp"
                 app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/primaryNavy">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:padding="24dp">
 
                     <TextView
+                        android:id="@+id/labelTodaySales"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Today's Total Sales"
+                        android:text="@string/label_today_sales"
                         android:textColor="#BDBDBD"
-                        android:textSize="14sp" />
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/tvTodaySales"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$0.00"
+                        android:text="৳0.00"
                         android:textColor="@color/white"
                         android:textSize="36sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelTodaySales" />
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_chart_modern"
+                        app:tint="#40FFFFFF"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/tvTodaySales" />
 
                     <View
+                        android:id="@+id/dividerSummary"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#40FFFFFF"
-                        android:layout_marginVertical="16dp" />
+                        android:background="#20FFFFFF"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvTodaySales" />
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:id="@+id/layoutTxn"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/dividerSummary">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:text="@string/label_transactions"
+                            android:textColor="#BDBDBD"
+                            android:textSize="12sp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Transactions"
-                                android:textColor="#BDBDBD"
-                                android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tvTodayTxnCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/tvTodayTxnCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textColor="@color/white"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/btnQuickStats"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:layout_constraintBottom_toBottomOf="@id/layoutTxn"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/layoutTxn">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:src="@android:drawable/ic_menu_today"
-                            app:tint="#40FFFFFF" />
+                            app:tint="@color/white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/btn_view_stats"
+                            android:textColor="@color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Start Sale Action Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardNewOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="#2C3E50">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="20dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_add_modern"
+                        app:tint="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_start_sale"
+                            android:textColor="#95A5A6"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_new_transaction"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_forward_modern"
+                        app:tint="#95A5A6" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- History Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnViewHistory"
                 style="@style/Widget.Material3.Button.TonalButton"
@@ -119,30 +248,33 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="16dp"
                 android:text="View Order History"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 app:cornerRadius="16dp"
                 app:icon="@drawable/ic_history_modern"
-                app:iconGravity="textStart" />
+                app:iconGravity="textStart"
+                app:iconSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Payment Methods Breakdown"
+                android:text="@string/label_breakdown"
                 android:textColor="@color/primaryNavy"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="28dp"
                 android:layout_marginBottom="12dp" />
 
-            <!-- Payment Breakdown Cards -->
+            <!-- Breakdown Cards -->
+            <!-- Cash -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/divider">
+                app:strokeColor="#F0F0F0">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -151,11 +283,20 @@
                     android:padding="16dp"
                     android:gravity="center_vertical">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@android:drawable/ic_menu_save"
-                        app:tint="@color/primaryNavy" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#F0F4F8"
+                        app:strokeWidth="0dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_cash_modern"
+                            app:tint="@color/primaryNavy" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -166,28 +307,37 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cash Payments"
+                            android:text="@string/method_cash"
                             android:textColor="@color/textSecondary"
-                            android:textSize="12sp" />
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
                         <TextView
                             android:id="@+id/tvCashSales"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="$0.00"
+                            android:text="৳0.00"
                             android:textColor="@color/textPrimary"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_arrow_forward_modern"
+                        app:tint="#D0D0D0" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Wallet -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/divider">
+                app:strokeColor="#F0F0F0">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -196,11 +346,20 @@
                     android:padding="16dp"
                     android:gravity="center_vertical">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@android:drawable/ic_menu_camera"
-                        app:tint="#D12053" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#FFF0F3"
+                        app:strokeWidth="0dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_wallet_modern"
+                            app:tint="#D12053" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -211,28 +370,37 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="bKash / Wallet"
+                            android:text="@string/method_wallet"
                             android:textColor="@color/textSecondary"
-                            android:textSize="12sp" />
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
                         <TextView
                             android:id="@+id/tvWalletSales"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="$0.00"
+                            android:text="৳0.00"
                             android:textColor="@color/textPrimary"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_arrow_forward_modern"
+                        app:tint="#D0D0D0" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/divider">
+                app:strokeColor="#F0F0F0">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -241,11 +409,20 @@
                     android:padding="16dp"
                     android:gravity="center_vertical">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@android:drawable/ic_dialog_info"
-                        app:tint="#1A73E8" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#F0F7FF"
+                        app:strokeWidth="0dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_card_modern"
+                            app:tint="#1A73E8" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -256,18 +433,25 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Card Payments"
+                            android:text="@string/method_card"
                             android:textColor="@color/textSecondary"
-                            android:textSize="12sp" />
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
                         <TextView
                             android:id="@+id/tvCardSales"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="$0.00"
+                            android:text="৳0.00"
                             android:textColor="@color/textPrimary"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_arrow_forward_modern"
+                        app:tint="#D0D0D0" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

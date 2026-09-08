@@ -5,7 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -27,8 +26,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public interface OnProductActionListener {
         void onQuantityChanged(Product product, int newQuantity);
-        void onEditProduct(Product product);
-        void onDeleteProduct(Product product);
     }
 
     public ProductAdapter(List<Product> productList, OnProductActionListener listener) {
@@ -99,20 +96,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.btnPlus.setOnClickListener(v -> listener.onQuantityChanged(product, quantity + 1));
         holder.btnMinus.setOnClickListener(v -> listener.onQuantityChanged(product, quantity - 1));
         
-        holder.btnMore.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(v.getContext(), v);
-            popup.getMenu().add("Edit");
-            popup.getMenu().add("Delete");
-            popup.setOnMenuItemClickListener(item -> {
-                if (item.getTitle().equals("Edit")) {
-                    listener.onEditProduct(product);
-                } else if (item.getTitle().equals("Delete")) {
-                    listener.onDeleteProduct(product);
-                }
-                return true;
-            });
-            popup.show();
-        });
+        // Hide management button in sales view
+        holder.btnMore.setVisibility(View.GONE);
     }
 
     private int convertDpToPx(View view, int dp) {

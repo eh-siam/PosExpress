@@ -1,19 +1,31 @@
-# Walkthrough - Login Icon Refinement
+# Transaction History Details Implementation
 
-I have adjusted the size of the icons in the login screen to make them look more refined and professional.
+I have implemented the ability to view detailed receipts for past transactions directly from the history list.
 
 ## Changes Made
 
-### UI Refinement
-- **Custom Small Icons**: Created two new vector drawables, [ic_email_small.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/drawable/ic_email_small.xml) and [ic_lock_small.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/drawable/ic_lock_small.xml), with reduced 20dp dimensions.
-- **Updated Layout**: Modified [activity_login.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/activity_login.xml) to use these smaller icons. This prevents them from looking "bulky" inside the outlined text fields and aligns better with the modern aesthetic we established.
+### 1. ViewModel Integration
+- **[PosViewModel.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/viewmodel/PosViewModel.java)**: Added `setSelectedOrder(Order)` which converts a historical order object into a JSON structure compatible with the receipt view. This ensures that when you click a past transaction, the app "knows" which one to show.
 
-## Verification Results
+### 2. Clickable History Items
+- **[OrderHistoryAdapter.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/OrderHistoryAdapter.java)**: Added a click listener to the transaction cards.
+- **[OrderHistoryFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/OrderHistoryFragment.java)**: Implemented the navigation logic. When an item is clicked, it sets the selected order in the ViewModel and navigates to the Receipt screen.
 
-### Visual Check
-- The icons now occupy less visual space, making the input fields feel cleaner.
-- Both the Email and Password fields now have consistently sized icons.
+### 3. Smart Receipt View
+- **[ReceiptFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/ReceiptFragment.java)**:
+    - Updated the date display to show the **original transaction time** instead of the current time when viewing historical data.
+    - Updated the "New Sale" button to say **"Back to History"** when viewing a past transaction, making navigation more intuitive.
+    - Improved the item list parser to handle both new and old transaction data formats.
 
-### Manual Verification Recommended
-1. Open the **Login** screen.
-2. Observe the Email and Password icons. They should now appear smaller and more elegantly integrated into the text fields.
+### 4. Navigation Graph
+- **[nav_graph.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/navigation/nav_graph.xml)**: Added the navigation path from Order History to the Receipt screen.
+
+## How to use
+1. Go to **Transaction History**.
+2. Tap on any transaction card in the list.
+3. The app will open the full receipt, showing exactly what was sold, the payment method used, and the correct historical timestamp.
+4. Tap **Back to History** to return to your list.
+
+## Verification
+- Successfully built the project and verified the navigation logic.
+- Standardized data formatting ensures that new transactions will display perfectly in the detailed view.

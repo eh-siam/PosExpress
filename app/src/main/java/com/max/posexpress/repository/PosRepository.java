@@ -219,6 +219,13 @@ public class PosRepository {
         }
     }
 
+    public Task<Void> deleteCategory(Category category) {
+        if (category.getId() != null) {
+            return categoriesRef.child(category.getId()).removeValue();
+        }
+        return null;
+    }
+
     public Task<Void> addProduct(Product product) {
         return productsRef.child(String.valueOf(product.getId())).setValue(product);
     }

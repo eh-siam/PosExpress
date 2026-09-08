@@ -43,6 +43,7 @@ public class ReceiptFragment extends Fragment {
     private View layoutCardDetails;
     private android.widget.ImageView ivQrCode;
     private android.widget.LinearLayout layoutItemsList;
+    private MaterialButton btnNewTransaction;
 
     @Nullable
     @Override
@@ -77,7 +78,7 @@ public class ReceiptFragment extends Fragment {
         ivQrCode = view.findViewById(R.id.ivQrCode);
         
         layoutItemsList = view.findViewById(R.id.layoutItemsList);
-        MaterialButton btnNewTransaction = view.findViewById(R.id.btnNewTransaction);
+        btnNewTransaction = view.findViewById(R.id.btnNewTransaction);
         MaterialButton btnPrintReceipt = view.findViewById(R.id.btnPrintReceipt);
         View receiptCard = view.findViewById(R.id.receiptCard);
 
@@ -87,11 +88,6 @@ public class ReceiptFragment extends Fragment {
             if (receiptCard != null) {
                 doPrint(receiptCard);
             }
-        });
-
-        btnNewTransaction.setOnClickListener(v -> {
-            viewModel.resetCart();
-            Navigation.findNavController(view).navigate(R.id.action_receiptFragment_to_catalogFragment);
         });
     }
 
@@ -130,7 +126,10 @@ public class ReceiptFragment extends Fragment {
             JSONObject response = new JSONObject(jsonString);
             String txnId = response.getString("transaction_id");
             String method = response.getString("method");
-            String date = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date());
+            
+            // Priority: Historical timestamp from JSON, else fallback to Current Time
+            long timestamp = response.optLong("timestamp", System.currentTimeMillis());
+            String date = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date(timestamp));
 
             // Billing Data
             double amount = response.optDouble("amount", 0.0);
@@ -161,6 +160,16 @@ public class ReceiptFragment extends Fragment {
                         tvPrice.setText(parts[1].trim());
                         
                         layoutItemsList.addView(itemView);
+                    } else {
+                        // Fallback for older data format
+                        View itemView = getLayoutInflater().inflate(R.layout.receipt_item_row, layoutItemsList, false);
+                        TextView tvDesc = itemView.findViewById(R.id.tvItemDescription);
+                        TextView tvPrice = itemView.findViewById(R.id.tvItemPrice);
+                        
+                        tvDesc.setText(itemStr);
+                        tvPrice.setText("");
+                        
+                        layoutItemsList.addView(itemView);
                     }
                 }
             }
@@ -172,6 +181,18 @@ public class ReceiptFragment extends Fragment {
             String customerDisplay = name + (phone.isEmpty() ? "" : " (" + phone + ")");
             tvCustomerInfo.setText(customerDisplay);
             tvOrderType.setText(orderType);
+
+            // Change button text if viewing history
+            if ("HISTORY".equals(response.optString("status"))) {
+                btnNewTransaction.setText("Back to History");
+                btnNewTransaction.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+            } else {
+                btnNewTransaction.setText(R.string.btn_new_sale);
+                btnNewTransaction.setOnClickListener(v -> {
+                    viewModel.resetCart();
+                    Navigation.findNavController(v).navigate(R.id.action_receiptFragment_to_catalogFragment);
+                });
+            }
 
             String sym = viewModel.getCurrencySymbol();
             tvSubtotal.setText(String.format(Locale.getDefault(), "%s%.2f", sym, subtotal));

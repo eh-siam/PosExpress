@@ -15,6 +15,9 @@ import com.max.posexpress.repository.PosRepository;
 import com.max.posexpress.util.AppPreferences;
 import com.max.posexpress.util.CountryConfig;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -326,6 +329,38 @@ public class PosViewModel extends AndroidViewModel {
         });
     }
 
+    public void deleteCategory(Category category) {
+        repository.deleteCategory(category).addOnSuccessListener(v -> {
+            successMessage.setValue("Category deleted");
+            if (selectedCategory.getValue() != null && selectedCategory.getValue().equals(category.getName())) {
+                setSelectedCategory("All");
+            }
+        }).addOnFailureListener(e -> {
+            errorMessage.setValue("Failed to delete category");
+        });
+    }
+
+    public void addCategory(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            errorMessage.setValue("Category name cannot be empty");
+            return;
+        }
+
+        // Check for duplicates
+        List<Category> currentCategories = categoryList.getValue();
+        if (currentCategories != null) {
+            for (Category c : currentCategories) {
+                if (c.getName().equalsIgnoreCase(name)) {
+                    errorMessage.setValue("Category already exists");
+                    return;
+                }
+            }
+        }
+
+        repository.addCategory(new Category(null, name.trim()));
+        successMessage.setValue("Category added successfully");
+    }
+
     private void checkAndAddCategory(String categoryName) {
         List<Category> currentCategories = categoryList.getValue();
         boolean exists = false;
@@ -368,7 +403,9 @@ public class PosViewModel extends AndroidViewModel {
                 Integer qty = cart.get(p.getId());
                 if (qty != null && qty > 0) {
                     double itemSubtotal = p.getPrice() * qty;
-                    itemStrings.add(String.format(Locale.getDefault(), "%s x%d = $%.2f", p.getName(), qty, itemSubtotal));
+                    // Standardized separator for consistent parsing
+                    String sym = getCurrencySymbol();
+                    itemStrings.add(String.format(Locale.getDefault(), "%s x%d | %s%.2f", p.getName(), qty, sym, itemSubtotal));
                 }
             }
             // Save to Firebase and return the Task
@@ -400,6 +437,47 @@ public class PosViewModel extends AndroidViewModel {
 
     public void setSelectedCategory(String category) {
         selectedCategory.setValue(category);
+    }
+
+    public void setSelectedOrder(Order order) {
+        if (order == null) {
+            transactionJson.setValue(null);
+            return;
+        }
+
+        try {
+            JSONObject response = new JSONObject();
+            response.put("status", "HISTORY");
+            response.put("transaction_id", order.getTransactionId());
+            response.put("amount", order.getTotalAmount());
+            response.put("subtotal", order.getSubtotal());
+            response.put("discount_amount", order.getDiscountAmount());
+            response.put("tax_amount", order.getTaxAmount());
+            response.put("discount_percent", order.getDiscountPercent());
+            response.put("tax_percent", order.getTaxPercent());
+            response.put("method", order.getPaymentMethod());
+            response.put("order_type", order.getOrderType());
+            response.put("customer_name", order.getCustomerName());
+            response.put("customer_phone", order.getCustomerPhone());
+
+            if (order.getTimestamp() instanceof Long) {
+                response.put("timestamp", (Long) order.getTimestamp());
+            }
+
+            JSONArray itemsArray = new JSONArray();
+            if (order.getItems() != null) {
+                for (String item : order.getItems()) {
+                    itemsArray.put(item);
+                }
+            }
+            response.put("items", itemsArray);
+
+            transactionJson.setValue(response.toString());
+
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+            errorMessage.setValue("Error loading historical order");
+        }
     }
 
     public void setSearchQuery(String query) {

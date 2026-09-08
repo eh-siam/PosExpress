@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -61,6 +62,9 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
 
         viewModel = new ViewModelProvider(requireActivity()).get(PosViewModel.class);
 
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
+
         tvTotalAmount = view.findViewById(R.id.tvTotalAmount);
         recyclerView = view.findViewById(R.id.recyclerView);
         layoutEmptyState = view.findViewById(R.id.layoutMainEmptyState);
@@ -73,13 +77,10 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         MaterialButton btnProceedPay = view.findViewById(R.id.btnProceedPay);
         fabAddProduct = view.findViewById(R.id.fabAddProduct);
         chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
-        View btnDashboard = view.findViewById(R.id.btnDashboard);
-        View btnSettings = view.findViewById(R.id.btnSettings);
         searchView = view.findViewById(R.id.searchView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
-        // Ensure adapter is attached if it already exists (from backstack)
         if (adapter != null) {
             recyclerView.setAdapter(adapter);
         }
@@ -95,10 +96,8 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         });
 
         viewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
-            // Update Chips
             chipGroupCategories.removeAllViews();
             
-            // Add "All" chip
             Chip allChip = new Chip(requireContext());
             allChip.setText("All");
             allChip.setCheckable(true);
@@ -152,9 +151,9 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
             }
         });
 
+        // FAB is for adding products
+        fabAddProduct.setVisibility(View.VISIBLE);
         fabAddProduct.setOnClickListener(v -> showProductDialog(null));
-        btnDashboard.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_catalogFragment_to_dashboardFragment));
-        btnSettings.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_catalogFragment_to_settingsFragment));
         
         btnProceedPay.setOnClickListener(v -> {
             Double total = viewModel.getTotalAmount().getValue();
@@ -188,24 +187,8 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
     }
 
     @Override
-    public void onEditProduct(Product product) {
-        showProductDialog(product);
-    }
-
-    @Override
-    public void onDeleteProduct(Product product) {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.title_delete_product)
-                .setMessage(getString(R.string.msg_delete_confirm) + " " + product.getName() + "?")
-                .setPositiveButton("Delete", (dialog, which) -> viewModel.deleteProduct(product))
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Clear references to views to avoid memory leaks
         recyclerView = null;
         layoutEmptyState = null;
         tvTotalAmount = null;
@@ -235,36 +218,28 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
                 
                 String currentCategory = viewModel.getSelectedCategory().getValue();
                 if (currentCategory == null || currentCategory.equals("All")) {
-                    // Whole catalog is empty
                     ivEmptyIcon.setImageResource(android.R.drawable.ic_menu_agenda);
                     tvEmptyTitle.setText(R.string.empty_catalog_title);
                     tvEmptySubtitle.setText(R.string.empty_catalog_subtitle);
+                    btnEmptyAction.setVisibility(View.VISIBLE);
                     btnEmptyAction.setText(R.string.btn_add_product);
                     btnEmptyAction.setOnClickListener(v -> showProductDialog(null));
-                    
-                    // Hide FAB when no products exist at all
-                    if (fabAddProduct != null) fabAddProduct.setVisibility(View.GONE);
                 } else {
-                    // Filtered category is empty
                     ivEmptyIcon.setImageResource(android.R.drawable.ic_menu_search);
                     tvEmptyTitle.setText("No products in " + currentCategory);
-                    tvEmptySubtitle.setText("Try checking another category or add one.");
+                    tvEmptySubtitle.setText("Try checking another category.");
+                    btnEmptyAction.setVisibility(View.VISIBLE);
                     btnEmptyAction.setText("View All");
                     btnEmptyAction.setOnClickListener(v -> {
                         viewModel.setSelectedCategory("All");
-                        // Manually check/reset chip if possible
                         if (chipGroupCategories != null) {
                             chipGroupCategories.check(R.id.chipAll);
                         }
                     });
-                    
-                    // Show FAB if products exist but are filtered out
-                    if (fabAddProduct != null) fabAddProduct.setVisibility(View.VISIBLE);
                 }
             } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 layoutEmptyState.setVisibility(View.GONE);
-                if (fabAddProduct != null) fabAddProduct.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -276,25 +251,20 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
         com.google.android.material.textfield.TextInputLayout tilPrice = dialogView.findViewById(R.id.tilProductPrice);
         AutoCompleteTextView etCategory = dialogView.findViewById(R.id.etProductCategory);
 
-        // Dynamic Hint with Currency
         tilPrice.setHint("Price (" + viewModel.getCurrencySymbol() + ")");
 
         if (productToEdit != null) {
             etName.setText(productToEdit.getName());
-            // Format price to avoid scientific notation and limit to 2 decimals
             String priceText = String.format(Locale.US, "%.2f", productToEdit.getPrice());
-            // Remove trailing .00 if it's an integer for cleaner look
             if (priceText.endsWith(".00")) priceText = priceText.substring(0, priceText.length() - 3);
             etPrice.setText(priceText);
             etCategory.setText(productToEdit.getCategory(), false);
             
-            // Move cursor to end
             if (etPrice.getText() != null) {
                 etPrice.setSelection(etPrice.getText().length());
             }
         }
 
-        // Input Filter for Price (Apply AFTER setting initial text)
         etPrice.setFilters(new InputFilter[]{new InputFilter() {
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
@@ -303,9 +273,8 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
                 String result = builder.toString();
 
                 if (result.isEmpty()) return null;
-                if (result.equals(".")) return null; // Allow starting with dot
+                if (result.equals(".")) return null;
 
-                // Allow only one decimal point
                 int dotCount = 0;
                 for (int i = 0; i < result.length(); i++) {
                     if (result.charAt(i) == '.') dotCount++;
@@ -314,17 +283,13 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
 
                 String[] parts = result.split("\\.");
                 if (parts.length > 0) {
-                    // Check integer part
                     if (parts[0].length() > 9) return "";
-                    
-                    // Check decimal part
                     if (parts.length > 1 && parts[1].length() > 2) return "";
                 }
                 return null;
             }
         }});
 
-        // Setup Category Dropdown
         List<Category> categories = viewModel.getCategoryList().getValue();
         List<String> categoryNames = new ArrayList<>();
         if (categories != null) {
@@ -346,7 +311,6 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
 
         dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String name = etName.getText().toString().trim();
-            // Robust parsing: replace comma with dot
             String priceStr = etPrice.getText().toString().trim().replace(',', '.');
             String category = etCategory.getText().toString().trim();
 
@@ -360,15 +324,12 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
                 return;
             }
 
-            // Duplicate Name Check
             if (productToEdit == null) {
-                // Adding new product
                 if (viewModel.isProductNameDuplicate(name)) {
                     Toast.makeText(getContext(), getString(R.string.msg_product_exists) + " (" + name + ")", Toast.LENGTH_SHORT).show();
                     return;
                 }
             } else {
-                // Editing existing product - check if name changed and new name is duplicate
                 if (!productToEdit.getName().equalsIgnoreCase(name) && viewModel.isProductNameDuplicate(name)) {
                     Toast.makeText(getContext(), getString(R.string.msg_product_exists) + " (" + name + ")", Toast.LENGTH_SHORT).show();
                     return;

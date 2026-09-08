@@ -16,9 +16,12 @@
         app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/backgroundOffWhite">
+            android:background="@color/backgroundOffWhite"
+            app:navigationIcon="@drawable/ic_back_modern"
+            app:navigationIconTint="@color/primaryNavy">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -28,36 +31,6 @@
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:layout_gravity="center" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btnSettings"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_settings_modern"
-                    android:padding="12dp"
-                    android:scaleType="fitCenter"
-                    app:tint="@color/primaryNavy"
-                    android:contentDescription="@string/desc_settings" />
-
-                <ImageButton
-                    android:id="@+id/btnDashboard"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_dashboard_modern"
-                    android:padding="12dp"
-                    android:scaleType="fitCenter"
-                    app:tint="@color/primaryNavy"
-                    android:contentDescription="@string/desc_dashboard" />
-            </LinearLayout>
 
         </com.google.android.material.appbar.MaterialToolbar>
 

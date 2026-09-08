@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -16,6 +15,8 @@ import androidx.navigation.Navigation;
 import com.max.posexpress.R;
 import com.max.posexpress.viewmodel.PosViewModel;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ public class DashboardFragment extends Fragment {
     private PosViewModel viewModel;
     private TextView tvTodaySales, tvTodayTxnCount;
     private TextView tvCashSales, tvWalletSales, tvCardSales;
+    private TextView tvHeaderSubtitle;
 
     @Nullable
     @Override
@@ -37,20 +39,36 @@ public class DashboardFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(PosViewModel.class);
 
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
+        // Header and Navigation
+        tvHeaderSubtitle = view.findViewById(R.id.tvHeaderSubtitle);
+        setupHeaderDate();
 
+        view.findViewById(R.id.btnSettings).setOnClickListener(v -> 
+            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_settingsFragment));
+
+        view.findViewById(R.id.cardNewOrder).setOnClickListener(v -> 
+            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_catalogFragment));
+
+        view.findViewById(R.id.btnViewHistory).setOnClickListener(v -> 
+            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_orderHistoryFragment));
+
+        view.findViewById(R.id.btnQuickStats).setOnClickListener(v -> 
+            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_orderHistoryFragment));
+
+        // Sales Data Views
         tvTodaySales = view.findViewById(R.id.tvTodaySales);
         tvTodayTxnCount = view.findViewById(R.id.tvTodayTxnCount);
         tvCashSales = view.findViewById(R.id.tvCashSales);
         tvWalletSales = view.findViewById(R.id.tvWalletSales);
         tvCardSales = view.findViewById(R.id.tvCardSales);
 
-        view.findViewById(R.id.btnViewHistory).setOnClickListener(v -> 
-            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_orderHistoryFragment));
-
         observeDashboardData();
         viewModel.startObservingOrders();
+    }
+
+    private void setupHeaderDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMM yyyy", Locale.getDefault());
+        tvHeaderSubtitle.setText(sdf.format(new Date()));
     }
 
     private void observeDashboardData() {

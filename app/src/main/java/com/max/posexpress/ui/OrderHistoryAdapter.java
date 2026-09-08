@@ -24,8 +24,14 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<HistoryListItem> displayItems = new ArrayList<>();
     private final SimpleDateFormat headerFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+    private final OnOrderClickListener listener;
 
-    public OrderHistoryAdapter(List<Order> orderList) {
+    public interface OnOrderClickListener {
+        void onOrderClick(Order order);
+    }
+
+    public OrderHistoryAdapter(List<Order> orderList, OnOrderClickListener listener) {
+        this.listener = listener;
         setOrderList(orderList);
     }
 
@@ -122,6 +128,12 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
             itemHolder.tvOrderItems.setText(itemsStr.toString());
+
+            itemHolder.itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onOrderClick(order);
+                }
+            });
         }
     }
 

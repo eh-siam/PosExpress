@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class OrderHistoryFragment extends Fragment {
+public class OrderHistoryFragment extends Fragment implements OrderHistoryAdapter.OnOrderClickListener {
 
     private PosViewModel viewModel;
     private OrderHistoryAdapter adapter;
@@ -94,7 +94,13 @@ public class OrderHistoryFragment extends Fragment {
             }
         }, 3000); // Set to 3 seconds as requested
 
-        viewModel.resetOrderPagination();
+        // Only reset and fetch if the list is empty (avoids clearing data when returning from details)
+        if (viewModel.getPaginatedOrders().getValue() == null || viewModel.getPaginatedOrders().getValue().isEmpty()) {
+            viewModel.resetOrderPagination();
+        } else {
+            // Immediately show existing data
+            updateUI(viewModel.getPaginatedOrders().getValue(), false);
+        }
     }
 
     private void updateUI(List<Order> orders, boolean isLoading) {
@@ -111,7 +117,7 @@ public class OrderHistoryFragment extends Fragment {
             recyclerView.setVisibility(View.VISIBLE);
 
             if (adapter == null) {
-                adapter = new OrderHistoryAdapter(new ArrayList<>(orders));
+                adapter = new OrderHistoryAdapter(new ArrayList<>(orders), this);
                 recyclerView.setAdapter(adapter);
             } else {
                 adapter.setOrderList(new ArrayList<>(orders));
@@ -132,6 +138,12 @@ public class OrderHistoryFragment extends Fragment {
             layoutEmptyHistory.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onOrderClick(Order order) {
+        viewModel.setSelectedOrder(order);
+        Navigation.findNavController(requireView()).navigate(R.id.action_orderHistoryFragment_to_receiptFragment);
     }
 
     @Override
