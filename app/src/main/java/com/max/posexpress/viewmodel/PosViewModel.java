@@ -71,7 +71,6 @@ public class PosViewModel extends AndroidViewModel {
     public void startObservingData() {
         if (isObservingProducts) return;
         isObservingProducts = true;
-
         isLoading.setValue(true);
         
         repository.observeProducts(new PosRepository.DataCallback() {
