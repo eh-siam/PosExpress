@@ -33,7 +33,7 @@ public class PosViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Product>> productList = new MutableLiveData<>(new ArrayList<>());
     private final MediatorLiveData<List<Product>> filteredProductList = new MediatorLiveData<>();
     private final MutableLiveData<List<Category>> categoryList = new MutableLiveData<>();
-    private final MutableLiveData<Map<Integer, Integer>> cartQuantities = new MutableLiveData<>();
+    private final MutableLiveData<Map<String, Integer>> cartQuantities = new MutableLiveData<>();
     private final MutableLiveData<Double> totalAmount = new MutableLiveData<>(0.0);
     private final MutableLiveData<String> transactionJson = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
@@ -80,7 +80,7 @@ public class PosViewModel extends AndroidViewModel {
             @Override
             public void onDataChanged(List<Product> products) {
                 // Sort products by ID descending (newest first)
-                products.sort((p1, p2) -> Integer.compare(p2.getId(), p1.getId()));
+                products.sort((p1, p2) -> p2.getId().compareTo(p1.getId()));
                 productList.setValue(new ArrayList<>(products));
                 calculateTotal();
                 isLoading.setValue(false);
@@ -109,7 +109,7 @@ public class PosViewModel extends AndroidViewModel {
 
     public LiveData<List<Product>> getProductList() { return filteredProductList; }
     public LiveData<List<Category>> getCategoryList() { return categoryList; }
-    public LiveData<Map<Integer, Integer>> getCartQuantities() { return cartQuantities; }
+    public LiveData<Map<String, Integer>> getCartQuantities() { return cartQuantities; }
     public LiveData<Double> getTotalAmount() { return totalAmount; }
     public LiveData<String> getTransactionJson() { return transactionJson; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
@@ -291,8 +291,7 @@ public class PosViewModel extends AndroidViewModel {
         checkAndAddCategory(category);
         try {
             double price = Double.parseDouble(priceStr);
-            int nextId = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
-            Product newProduct = new Product(nextId, name, price, category, "");
+            Product newProduct = new Product("", name, price, category, "");
             
             repository.addProduct(newProduct).addOnSuccessListener(v -> {
                 successMessage.setValue("Product added successfully!");
@@ -399,7 +398,7 @@ public class PosViewModel extends AndroidViewModel {
                            double subtotal, double discountAmount, double taxAmount, double discountPercent, double taxPercent, double total) {
         List<String> itemStrings = new ArrayList<>();
         List<Product> products = productList.getValue();
-        Map<Integer, Integer> cart = repository.getCartQuantities();
+        Map<String, Integer> cart = repository.getCartQuantities();
 
         if (products != null && cart != null) {
             for (Product p : products) {
@@ -421,7 +420,7 @@ public class PosViewModel extends AndroidViewModel {
     private void calculateTotal() {
         double total = 0.0;
         List<Product> products = productList.getValue();
-        Map<Integer, Integer> cart = repository.getCartQuantities();
+        Map<String, Integer> cart = repository.getCartQuantities();
         if (products != null && cart != null) {
             for (Product p : products) {
                 Integer qty = cart.get(p.getId());

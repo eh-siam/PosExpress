@@ -231,16 +231,22 @@ public class PosRepository {
     }
 
     public Task<Void> addProduct(Product product) {
-        return productsRef.child(String.valueOf(product.getId())).setValue(product);
+        if (product.getId() == null || product.getId().isEmpty()) {
+            String id = productsRef.push().getKey();
+            if (id != null) {
+                product.setId(id);
+            }
+        }
+        return productsRef.child(product.getId()).setValue(product);
     }
 
     public Task<Void> updateProduct(Product product) {
-        return productsRef.child(String.valueOf(product.getId())).setValue(product);
+        return productsRef.child(product.getId()).setValue(product);
     }
 
     public Task<Void> deleteProduct(Product product) {
         cartQuantities.remove(product.getId());
-        return productsRef.child(String.valueOf(product.getId())).removeValue();
+        return productsRef.child(product.getId()).removeValue();
     }
 
     /**
@@ -259,11 +265,11 @@ public class PosRepository {
         return null;
     }
 
-    public Map<Integer, Integer> getCartQuantities() {
+    public Map<String, Integer> getCartQuantities() {
         return cartQuantities;
     }
 
-    public void updateCartQuantity(int productId, int quantity) {
+    public void updateCartQuantity(String productId, int quantity) {
         if (quantity <= 0) {
             cartQuantities.remove(productId);
         } else {

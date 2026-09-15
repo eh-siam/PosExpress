@@ -224,7 +224,7 @@ public class PaymentFragment extends Fragment {
                 response.put("order_type", orderType);
                 
                 JSONArray itemsArray = new JSONArray();
-                Map<Integer, Integer> cart = viewModel.getCartQuantities().getValue();
+                Map<String, Integer> cart = viewModel.getCartQuantities().getValue();
                 List<Product> products = viewModel.getProductList().getValue();
                 
                 if (cart != null && products != null) {

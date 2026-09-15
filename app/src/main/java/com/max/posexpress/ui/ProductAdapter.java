@@ -22,7 +22,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     private List<Product> productList;
     private final OnProductActionListener listener;
-    private Map<Integer, Integer> productQuantities = new HashMap<>();
+    private Map<String, Integer> productQuantities = new HashMap<>();
 
     public interface OnProductActionListener {
         void onQuantityChanged(Product product, int newQuantity);
@@ -40,7 +40,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    public void setQuantities(Map<Integer, Integer> quantities) {
+    public void setQuantities(Map<String, Integer> quantities) {
         this.productQuantities = quantities;
         notifyDataSetChanged();
     }
