@@ -30,7 +30,7 @@ public class PosRepository {
     private final DatabaseReference categoriesRef;
     private final List<Product> productList = new ArrayList<>();
     private final List<Category> categoryList = new ArrayList<>();
-    private final Map<Integer, Integer> cartQuantities = new HashMap<>();
+    private final Map<String, Integer> cartQuantities = new HashMap<>();
     private String transactionJson;
 
     public interface DataCallback {
@@ -46,6 +46,10 @@ public class PosRepository {
     public interface OrderCallback {
         void onOrdersChanged(List<Order> orders);
         void onError(String error);
+    }
+
+    public interface NetworkStatusCallback {
+        void onStatusChanged(boolean isConnected);
     }
 
     private PosRepository(Context context) {
@@ -278,5 +282,21 @@ public class PosRepository {
 
     public void setTransactionJson(String json) {
         this.transactionJson = json;
+    }
+
+    public void observeNetworkStatus(NetworkStatusCallback callback) {
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean connected = snapshot.getValue(Boolean.class);
+                callback.onStatusChanged(connected != null && connected);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onStatusChanged(false);
+            }
+        });
     }
 }

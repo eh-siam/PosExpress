@@ -155,15 +155,15 @@
 
             <ImageButton
                 android:id="@+id/btnMore"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="6dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_edit_modern"
+                android:src="@android:drawable/ic_menu_more"
                 android:scaleType="centerInside"
-                android:padding="2dp"
+                android:padding="4dp"
                 app:tint="@color/primaryNavy"
-                android:contentDescription="Edit Product" />
+                android:contentDescription="@string/btn_edit" />
 
         </LinearLayout>
 

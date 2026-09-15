@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 
 @Keep
 data class Product(
-    var id: Int = 0,
+    var id: String = "",
     var name: String = "",
     var price: Double = 0.0,
     var category: String = "General",

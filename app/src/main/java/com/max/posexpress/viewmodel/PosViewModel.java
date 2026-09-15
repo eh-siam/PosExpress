@@ -41,6 +41,7 @@ public class PosViewModel extends AndroidViewModel {
     private final MutableLiveData<String> successMessage = new MutableLiveData<>();
     private final MutableLiveData<String> selectedCategory = new MutableLiveData<>("All");
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
+    private final MutableLiveData<Boolean> isConnected = new MutableLiveData<>(true);
 
     private boolean isObservingProducts = false;
 
@@ -65,6 +66,8 @@ public class PosViewModel extends AndroidViewModel {
         filteredProductList.addSource(selectedCategory, category -> applyFilter());
         filteredProductList.addSource(searchQuery, query -> applyFilter());
         
+        repository.observeNetworkStatus(connected -> isConnected.postValue(connected));
+
         applyFilter();
     }
 
@@ -110,6 +113,7 @@ public class PosViewModel extends AndroidViewModel {
     public LiveData<Double> getTotalAmount() { return totalAmount; }
     public LiveData<String> getTransactionJson() { return transactionJson; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
+    public LiveData<Boolean> getIsConnected() { return isConnected; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<String> getSuccessMessage() { return successMessage; }
     public LiveData<String> getSelectedCategory() { return selectedCategory; }

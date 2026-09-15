@@ -1,31 +1,41 @@
-# Add Edit Button to Catalog Product Cards Implementation Plan
+# Implementation Plan - Unique Product ID Generation (UUID / Firebase Key)
 
-This plan outlines the changes required to add an Edit button next to the Add/Quantity controls on each product card in the catalog screen, enabling merchants to easily edit product details.
+Replace integer/timestamp-based product IDs with unique string IDs (`UUID.randomUUID().toString()` or Firebase push keys) to prevent ID conflicts when multiple devices add products offline.
 
 ## User Review Required
 
-> [!NOTE]
-> We will expose the existing `btnMore` (turning it into a distinct Edit icon button) on each product card in `product_item.xml`, connect it via `ProductAdapter.OnProductActionListener`, and open the edit product dialog in `CatalogFragment`.
+> [!IMPORTANT]
+> - Changing `Product.id` from `Int` to `String` requires updating cart quantity maps (`Map<String, Integer>`), repository methods, ViewModel methods, and adapter references.
 
 ## Proposed Changes
 
-### UI & Adapter
+### Data Model
 
-#### [MODIFY] [product_item.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/product_item.xml)
-- Update `btnMore` to use an edit icon (`android.R.drawable.ic_menu_edit` or a styled button) and ensure proper margin/padding next to the add button / quantity controls.
+#### [MODIFY] [Product.kt](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/model/Product.kt)
+- Change `var id: Int = 0` to `var id: String = ""`.
+
+### Repository & ViewModel
+
+#### [MODIFY] [PosRepository.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/repository/PosRepository.java)
+- Change `cartQuantities` from `Map<Integer, Integer>` to `Map<String, Integer>`.
+- Update `updateCartQuantity(String productId, int quantity)`.
+
+#### [MODIFY] [PosViewModel.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/viewmodel/PosViewModel.java)
+- In `addProduct(...)`, generate product ID using `UUID.randomUUID().toString()`.
+- Update cart quantity handling methods for `String` product ID.
+
+### UI Adapters & Fragments
 
 #### [MODIFY] [ProductAdapter.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/ProductAdapter.java)
-- Add `onEditProduct(Product product)` to `OnProductActionListener` interface.
-- Make `btnMore` visible (`View.VISIBLE`) in `onBindViewHolder`.
-- Set click listener on `btnMore` to call `listener.onEditProduct(product)`.
+- Update `productQuantities` map type to `Map<String, Integer>`.
 
-#### [MODIFY] [CatalogFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/CatalogFragment.java)
-- Implement `onEditProduct(Product product)` in `CatalogFragment`, calling `showProductDialog(product)`.
+#### [MODIFY] [PaymentFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/PaymentFragment.java)
+- Update cart map type to `Map<String, Integer>`.
 
 ## Verification Plan
 
 ### Automated Tests
-- Build app with `app:assembleDebug` to ensure compilation.
+- Build project using `./gradlew :app:assembleDebug`.
 
 ### Manual Verification
-- Deploy to emulator/device, open Catalog screen, tap the Edit button on any product card, and verify that the edit product dialog opens with pre-filled product details.
+- Deploy app, add new products, update quantities, and process checkout to ensure product ID and cart mapping work correctly with unique string IDs.

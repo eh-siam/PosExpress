@@ -1,7 +1,7 @@
-# Task List: Add Edit Button to Catalog Product Cards
+# Task List - Unique Product ID Generation
 
-- [x] Update `product_item.xml` to make `btnMore` visible and set an edit icon
-- [x] Update `ProductAdapter.java` to add `onEditProduct` interface method and attach click listener
-- [x] Update `CatalogFragment.java` to implement `onEditProduct` and open product edit dialog
-- [x] Build project and verify compilation (`app:assembleDebug`)
-- [x] Create walkthrough artifact
+- `[/]` Update `Product.kt` ID type to `String` <!-- id: 0 -->
+- `[ ]` Update `PosRepository.java` cart quantities and product methods <!-- id: 1 -->
+- `[ ]` Update `PosViewModel.java` product creation and cart quantity management <!-- id: 2 -->
+- `[ ]` Update `ProductAdapter.java` and `PaymentFragment.java` cart quantity maps <!-- id: 3 -->
+- `[ ]` Verify build and functionality <!-- id: 4 -->

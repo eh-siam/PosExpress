@@ -192,6 +192,24 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
     }
 
     @Override
+    public void onDeleteProduct(Product product) {
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete Product")
+                .setMessage("Are you sure you want to delete \"" + product.getName() + "\"?")
+                .setIcon(android.R.drawable.ic_menu_delete)
+                .setPositiveButton("Yes", (d, which) -> {
+                    viewModel.deleteProduct(product);
+                    Toast.makeText(getContext(), "Product deleted", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("No", null)
+                .create();
+
+        dialog.show();
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_save, 0, 0, 0);
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_close_clear_cancel, 0, 0, 0);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         recyclerView = null;

@@ -1,22 +1,27 @@
-# Walkthrough - Add Edit Button to Catalog Product Cards
+# Walkthrough - Firebase `.info/connected` Network Status Indicator
 
-We have successfully added an Edit button next to the add/quantity controls on each product item card in the catalog screen, allowing merchants to edit products directly.
+Implemented real-time network connectivity monitoring using Firebase Realtime Database `.info/connected` to display an offline warning banner whenever the device loses internet connection.
 
 ## Changes
 
-### UI & Adapter
+### Repository & ViewModel
 
-#### [MODIFY] [product_item.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/product_item.xml)
-- Updated `btnMore` to display an edit icon (`android.R.drawable.ic_menu_edit`) with primary navy tint and visibility enabled.
+#### [PosRepository.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/repository/PosRepository.java)
+- Added `observeNetworkStatus(NetworkStatusCallback callback)` listening to `FirebaseDatabase.getInstance().getReference(".info/connected")`.
 
-#### [MODIFY] [ProductAdapter.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/ProductAdapter.java)
-- Added `onEditProduct(Product product)` to `OnProductActionListener`.
-- Enabled `btnMore` visibility in `onBindViewHolder` and set click listener to trigger `listener.onEditProduct(product)`.
+#### [PosViewModel.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/viewmodel/PosViewModel.java)
+- Added `isConnected` LiveData (`MutableLiveData<Boolean>`) and initialized observation in constructor.
+- Exposed `getIsConnected()` getter method.
 
-#### [MODIFY] [CatalogFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/CatalogFragment.java)
-- Implemented `onEditProduct(Product product)`, calling `showProductDialog(product)` to open the edit dialog pre-filled with product details.
+### UI & Activity
+
+#### [activity_host.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/activity_host.xml)
+- Added a top offline warning banner (`tvOfflineBanner`) with a red background and white text ("No internet connection. Working offline.").
+
+#### [HostActivity.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/HostActivity.java)
+- Observed `viewModel.getIsConnected()` to automatically show or hide the offline banner in real-time.
 
 ## Verification Results
 
 ### Automated Tests
-- Executed `app:assembleDebug` build successfully with no compilation errors.
+- `./gradlew :app:assembleDebug` -> **BUILD SUCCESSFUL**
