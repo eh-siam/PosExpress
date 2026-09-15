@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primaryNavy">#7986CB</color>
+    <color name="primaryLight">#9FA8DA</color>
+    <color name="successGreen">#4CAF50</color>
+    <color name="successEmerald">#66BB6A</color>
+    <color name="backgroundOffWhite">#121212</color>
+    <color name="white">#1E1E1E</color>
+    <color name="textPrimary">#E3E3E3</color>
+    <color name="textSecondary">#A0A3BD</color>
+    <color name="divider">#3F3F46</color>
+    <color name="alertRed">#CF6679</color>
+    <color name="surfaceVariant">#1E1E1E</color>
+    <color name="successContainer">#1B382B</color>
+    <color name="onSuccessContainer">#81C784</color>
+    <color name="successContainerSubtle">#1A2E22</color>
+
+    <!-- Payment Methods -->
+    <color name="paymentCash">#4CAF50</color>
+    <color name="paymentCard">#64B5F6</color>
+    <color name="paymentWallet">#F48FB1</color>
+</resources>

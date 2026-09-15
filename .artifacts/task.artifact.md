@@ -1,6 +1,7 @@
-- [x] Update dependencies (Firebase 34.18.0, CameraX 1.6.2)
-- [x] Set `versionCode` to 5 and `versionName` to 1.4 in `app/build.gradle.kts`
-- [x] Explicitly disable legacy packaging in `app/build.gradle.kts` and `gradle.properties`
-- [x] Verify `android:extractNativeLibs="false"` in `AndroidManifest.xml`
-- [x] Perform clean build and generate `.aab`
-- [x] Verify output file
+# Task List: Support Both Dark and Light Mode
+
+- [x] Create `res/values-night/colors.xml` with dark mode color palette
+- [x] Update `res/values-night/themes.xml` for Day/Night theme styling
+- [x] Update `SplashActivity.java` to remove forced light mode (`MODE_NIGHT_NO`)
+- [x] Build project and verify compilation (`app:assembleDebug`)
+- [x] Create walkthrough artifact

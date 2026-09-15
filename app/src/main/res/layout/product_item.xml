@@ -97,11 +97,14 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddCart"
-                    style="@style/Widget.Material3.Button.TonalButton"
+                    style="@style/Widget.Material3.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add"
+                    android:text="@string/btn_add"
+                    android:textColor="@color/white"
                     android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/successGreen"
                     app:cornerRadius="12dp"
                     android:visibility="visible"/>
 

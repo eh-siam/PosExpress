@@ -1,36 +1,33 @@
-# Comprehensive 16 KB and API 36 Compliance Fix
+# Support Both Dark and Light Mode Implementation Plan
 
-This plan provides a "perfect" fix for the Google Play Console errors by updating both build configurations and critical third-party dependencies that contain native code.
+This plan outlines the changes required to properly support both Dark Mode and Light Mode in the PosExpress app, allowing the app to automatically adapt to the user's system theme preferences rather than forcing Light Mode.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> I am updating **Firebase** and **CameraX** to their latest stable versions. These libraries contain the native code (`.so` files) that usually trigger the 16 KB alignment error. Updating them ensures we are using modern, compliant binaries.
+> To support true Day/Night switching, we will create a dark color palette in `res/values-night/colors.xml` and update `res/values-night/themes.xml`, while removing the code that forces Light Mode.
+
+## Open Questions
+
+None. The requirements are clear: support both dark and light mode seamlessly.
 
 ## Proposed Changes
 
-### Build Configuration
-#### [MODIFY] [app/build.gradle.kts](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/build.gradle.kts)
-- **SDK Targets:** Maintain `compileSdk = 36` and `targetSdk = 36`.
-- **Version:** Increment to `versionCode = 5` and `versionName = "1.4"`.
-- **Packaging:** Explicitly set `jniLibs.useLegacyPackaging = false` to ensure 16 KB alignment in the final bundle.
-- **Dependencies Update:**
-    - Update Firebase BoM from `33.1.2` to `34.18.0`.
-    - Update CameraX from `1.3.4` to `1.6.2`.
+### Theme and Colors
 
-#### [MODIFY] [gradle.properties](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/gradle.properties)
-- Add `android.bundle.jniLibs.useLegacyPackaging=false` (to be absolutely sure the bundle tool doesn't compress libs).
+#### [MODIFY] [SplashActivity.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/SplashActivity.java)
+- Remove `AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);` so the app respects system dark/light mode settings.
 
-### Manifest Consistency
-#### [MODIFY] [AndroidManifest.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/AndroidManifest.xml)
-- Confirm `android:extractNativeLibs="false"` is present in the `<application>` tag.
+#### [NEW] [colors.xml (night)](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/values-night/colors.xml)
+- Define dark theme color palette (e.g., dark surface colors, readable light text colors like `textPrimary` as `#E3E3E3`, `textSecondary` as `#C4C7EB`, dark window background like `#121212`, card background, etc.).
+
+#### [MODIFY] [themes.xml (night)](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/values-night/themes.xml)
+- Configure `Base.Theme.PosExpress` to use the dark theme color resources (`colorPrimary`, `android:windowBackground`, `colorSurface`, etc.).
 
 ## Verification Plan
 
-### Automated Build
-- Run `./gradlew clean` to purge all 4 KB-aligned artifacts.
-- Run `./gradlew :app:bundleRelease` to generate the new compliant bundle.
+### Automated Tests
+- Build the app with `app:assembleDebug` to verify compilation.
 
 ### Manual Verification
-- Verify the generated AAB size.
-- The new bundle will have version 1.4, allowing for a fresh upload to the Play Console.
+- Deploy to device/emulator and test switching between system Light Mode and Dark Mode to verify that text remains readable, backgrounds adapt correctly, and UI components look professional in both modes.

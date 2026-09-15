@@ -13,6 +13,7 @@
     <string name="empty_catalog_title">Catalog is Empty</string>
     <string name="empty_catalog_subtitle">Tap the \'+\' button to add your first product.</string>
     <string name="btn_add_product">Add Product</string>
+    <string name="btn_add">+ Add</string>
     <string name="label_total_amount">Total Amount</string>
     <string name="btn_checkout">Checkout</string>
 
