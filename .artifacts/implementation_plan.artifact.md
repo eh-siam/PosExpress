@@ -1,33 +1,31 @@
-# Support Both Dark and Light Mode Implementation Plan
+# Add Edit Button to Catalog Product Cards Implementation Plan
 
-This plan outlines the changes required to properly support both Dark Mode and Light Mode in the PosExpress app, allowing the app to automatically adapt to the user's system theme preferences rather than forcing Light Mode.
+This plan outlines the changes required to add an Edit button next to the Add/Quantity controls on each product card in the catalog screen, enabling merchants to easily edit product details.
 
 ## User Review Required
 
-> [!IMPORTANT]
-> To support true Day/Night switching, we will create a dark color palette in `res/values-night/colors.xml` and update `res/values-night/themes.xml`, while removing the code that forces Light Mode.
-
-## Open Questions
-
-None. The requirements are clear: support both dark and light mode seamlessly.
+> [!NOTE]
+> We will expose the existing `btnMore` (turning it into a distinct Edit icon button) on each product card in `product_item.xml`, connect it via `ProductAdapter.OnProductActionListener`, and open the edit product dialog in `CatalogFragment`.
 
 ## Proposed Changes
 
-### Theme and Colors
+### UI & Adapter
 
-#### [MODIFY] [SplashActivity.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/SplashActivity.java)
-- Remove `AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);` so the app respects system dark/light mode settings.
+#### [MODIFY] [product_item.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/product_item.xml)
+- Update `btnMore` to use an edit icon (`android.R.drawable.ic_menu_edit` or a styled button) and ensure proper margin/padding next to the add button / quantity controls.
 
-#### [NEW] [colors.xml (night)](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/values-night/colors.xml)
-- Define dark theme color palette (e.g., dark surface colors, readable light text colors like `textPrimary` as `#E3E3E3`, `textSecondary` as `#C4C7EB`, dark window background like `#121212`, card background, etc.).
+#### [MODIFY] [ProductAdapter.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/ProductAdapter.java)
+- Add `onEditProduct(Product product)` to `OnProductActionListener` interface.
+- Make `btnMore` visible (`View.VISIBLE`) in `onBindViewHolder`.
+- Set click listener on `btnMore` to call `listener.onEditProduct(product)`.
 
-#### [MODIFY] [themes.xml (night)](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/values-night/themes.xml)
-- Configure `Base.Theme.PosExpress` to use the dark theme color resources (`colorPrimary`, `android:windowBackground`, `colorSurface`, etc.).
+#### [MODIFY] [CatalogFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/CatalogFragment.java)
+- Implement `onEditProduct(Product product)` in `CatalogFragment`, calling `showProductDialog(product)`.
 
 ## Verification Plan
 
 ### Automated Tests
-- Build the app with `app:assembleDebug` to verify compilation.
+- Build app with `app:assembleDebug` to ensure compilation.
 
 ### Manual Verification
-- Deploy to device/emulator and test switching between system Light Mode and Dark Mode to verify that text remains readable, backgrounds adapt correctly, and UI components look professional in both modes.
+- Deploy to emulator/device, open Catalog screen, tap the Edit button on any product card, and verify that the edit product dialog opens with pre-filled product details.

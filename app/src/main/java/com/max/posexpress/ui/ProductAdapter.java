@@ -26,6 +26,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public interface OnProductActionListener {
         void onQuantityChanged(Product product, int newQuantity);
+        void onEditProduct(Product product);
     }
 
     public ProductAdapter(List<Product> productList, OnProductActionListener listener) {
@@ -95,9 +96,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.btnAdd.setOnClickListener(v -> listener.onQuantityChanged(product, 1));
         holder.btnPlus.setOnClickListener(v -> listener.onQuantityChanged(product, quantity + 1));
         holder.btnMinus.setOnClickListener(v -> listener.onQuantityChanged(product, quantity - 1));
+        holder.btnMore.setOnClickListener(v -> listener.onEditProduct(product));
         
-        // Hide management button in sales view
-        holder.btnMore.setVisibility(View.GONE);
+        holder.btnMore.setVisibility(View.VISIBLE);
     }
 
     private int convertDpToPx(View view, int dp) {

@@ -187,6 +187,11 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnProduc
     }
 
     @Override
+    public void onEditProduct(Product product) {
+        showProductDialog(product);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         recyclerView = null;

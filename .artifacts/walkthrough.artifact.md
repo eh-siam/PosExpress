@@ -1,20 +1,22 @@
-# Walkthrough - Supporting Both Dark and Light Mode
+# Walkthrough - Add Edit Button to Catalog Product Cards
 
-We have successfully added full Dark and Light mode support to the PosExpress app. The app now seamlessly adapts to the user's system theme preferences.
+We have successfully added an Edit button next to the add/quantity controls on each product item card in the catalog screen, allowing merchants to edit products directly.
 
 ## Changes
 
-### Theme & Colors
-#### [NEW] [colors.xml (night)](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/values-night/colors.xml)
-- Added dark mode specific color palette (`backgroundOffWhite` as `#121212`, `white` as `#1E1E1E`, `textPrimary` as `#E3E3E3`, `textSecondary` as `#A0A3BD`, and adjusted primary/success/alert colors for high contrast and readability in dark theme).
+### UI & Adapter
 
-#### [MODIFY] [themes.xml (night)](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/values-night/themes.xml)
-- Configured `Base.Theme.PosExpress` with Material 3 DayNight colors for dark theme.
+#### [MODIFY] [product_item.xml](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/res/layout/product_item.xml)
+- Updated `btnMore` to display an edit icon (`android.R.drawable.ic_menu_edit`) with primary navy tint and visibility enabled.
 
-#### [MODIFY] [SplashActivity.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/SplashActivity.java)
-- Removed `AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);` so the app respects system theme settings and switches between light and dark mode automatically.
+#### [MODIFY] [ProductAdapter.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/ProductAdapter.java)
+- Added `onEditProduct(Product product)` to `OnProductActionListener`.
+- Enabled `btnMore` visibility in `onBindViewHolder` and set click listener to trigger `listener.onEditProduct(product)`.
+
+#### [MODIFY] [CatalogFragment.java](file:///home/simec-system-android/AndroidStudioProjects/PosApplicatinJava/app/src/main/java/com/max/posexpress/ui/CatalogFragment.java)
+- Implemented `onEditProduct(Product product)`, calling `showProductDialog(product)` to open the edit dialog pre-filled with product details.
 
 ## Verification Results
 
 ### Automated Tests
-- Executed `app:assembleDebug` build successfully with no compilation errors or warnings.
+- Executed `app:assembleDebug` build successfully with no compilation errors.

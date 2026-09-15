@@ -1,7 +1,7 @@
-# Task List: Support Both Dark and Light Mode
+# Task List: Add Edit Button to Catalog Product Cards
 
-- [x] Create `res/values-night/colors.xml` with dark mode color palette
-- [x] Update `res/values-night/themes.xml` for Day/Night theme styling
-- [x] Update `SplashActivity.java` to remove forced light mode (`MODE_NIGHT_NO`)
+- [x] Update `product_item.xml` to make `btnMore` visible and set an edit icon
+- [x] Update `ProductAdapter.java` to add `onEditProduct` interface method and attach click listener
+- [x] Update `CatalogFragment.java` to implement `onEditProduct` and open product edit dialog
 - [x] Build project and verify compilation (`app:assembleDebug`)
 - [x] Create walkthrough artifact

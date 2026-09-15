@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:hint="Product Name"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_menu_edit"
+            app:startIconDrawable="@drawable/ic_inventory_modern"
             app:startIconTint="@color/primaryNavy"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.PaySwift.Rounded"
             android:layout_marginBottom="16dp">
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:hint="Price"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_menu_save"
+            app:startIconDrawable="@drawable/ic_price_modern"
             app:startIconTint="@color/primaryNavy"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.PaySwift.Rounded"
             android:layout_marginBottom="16dp">
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:hint="Category"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            app:startIconDrawable="@android:drawable/ic_menu_agenda"
+            app:startIconDrawable="@drawable/ic_category_modern"
             app:startIconTint="@color/primaryNavy"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.PaySwift.Rounded"
             android:layout_marginBottom="8dp">
