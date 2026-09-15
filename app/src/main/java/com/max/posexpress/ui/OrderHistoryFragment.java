@@ -120,6 +120,7 @@ public class OrderHistoryFragment extends Fragment implements OrderHistoryAdapte
                 adapter = new OrderHistoryAdapter(new ArrayList<>(orders), this);
                 recyclerView.setAdapter(adapter);
             } else {
+                recyclerView.setAdapter(adapter);
                 adapter.setOrderList(new ArrayList<>(orders));
             }
         } else if (!isMinLoadingTimePassed) {

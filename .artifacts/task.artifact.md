@@ -1,6 +1,6 @@
-- [x] Update `PosViewModel.java` to support historical order selection
-- [x] Add click listener to `OrderHistoryAdapter.java`
-- [x] Update `nav_graph.xml` with history to receipt action
-- [x] Implement click handling in `OrderHistoryFragment.java`
-- [x] Refine `ReceiptFragment.java` for historical data display
-- [x] Verify functionality
+- [x] Update dependencies (Firebase 34.18.0, CameraX 1.6.2)
+- [x] Set `versionCode` to 5 and `versionName` to 1.4 in `app/build.gradle.kts`
+- [x] Explicitly disable legacy packaging in `app/build.gradle.kts` and `gradle.properties`
+- [x] Verify `android:extractNativeLibs="false"` in `AndroidManifest.xml`
+- [x] Perform clean build and generate `.aab`
+- [x] Verify output file
